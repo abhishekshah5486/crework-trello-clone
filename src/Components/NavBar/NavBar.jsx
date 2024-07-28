@@ -1,5 +1,6 @@
 import React from 'react';
 import './NavBar.css';
+import { Link } from 'react-router-dom';
 
 const NavBar = () => {
   return (
@@ -16,7 +17,7 @@ const NavBar = () => {
                 </ul>
             </div>
             <div className="right-nav-section">
-                <h2>Log in</h2>
+                <Link to="/login" style={{textDecoration: 'none', color: 'blue'}}><h2>Log in</h2></Link>
                 <div>Get Workflo for free</div>
             </div>
         </div>
