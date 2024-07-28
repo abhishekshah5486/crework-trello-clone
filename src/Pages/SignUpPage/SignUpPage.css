@@ -1,0 +1,84 @@
+
+.signup-page{
+    height: 100vh;
+    width: 100vw;
+    background: linear-gradient(to top, #AFA3FF, #FFFFFF);
+    display: flex;
+    justify-content: center;
+    padding-top: 120px;
+}
+.signup-page-container{
+    height: 560px;
+    width: 650px;
+    border-radius: 16px;
+    background-color: white;
+    border: 1px solid #CECECE;
+    padding: 60px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 32px;
+
+    h2, .logo-name{
+        font-size: 45px;
+        font-weight: 600;
+    }
+    .logo-name{
+        color: #4534AC;
+    }
+
+    form{
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+
+        input{
+            width: 528px;
+            height: 56px;
+            border-radius: 8px;
+            padding: 16px 12px;
+            background-color: #ebebeb; 
+            color: #606060;
+            outline: none;
+            border: none;
+            font-size: 20px;
+        }
+        input[type="password"]{
+            position: relative;
+        }
+        input::placeholder{
+            color: #999999;
+        }
+        input:focus{
+            outline: 1px solid #999999;
+        }
+        button{
+            outline: none;
+            border: none;
+        }
+        button.btn-enabled{
+            background: linear-gradient(to top, #362698, #6556c1);
+            color: white;
+            border-radius: 8px;
+            height: 56px;
+            font-size: 20px;
+            cursor: pointer;
+        }
+        button.btn-disabled{
+            background: linear-gradient(to bottom, #9085cf, #6f64ae);
+            color: white;
+            border-radius: 8px;
+            height: 56px;
+            font-size: 20px;
+            cursor: not-allowed;
+        }
+        .password-icon{
+            position: absolute;
+            color: #999999;
+            transform: translate(31rem, 11rem);
+        }
+    }
+    p{
+        font-size: 20px;
+    }
+}

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import './LoginPage.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye, faEyeSlash } from '@fortawesome/free-regular-svg-icons';
+import { Link } from 'react-router-dom';
 
 const LoginPage = () => {
     const [showPassword, setShowPassword] = useState(false);    const [formValues, setFormValues] = useState({
@@ -40,7 +41,7 @@ const LoginPage = () => {
             <button type="submit" className={isFormComplete ? "btn-enabled" : "btn-disabled"}>Login</button>
             <FontAwesomeIcon icon={showPassword ? faEye : faEyeSlash} className="password-icon" onClick={togglePasswordVisibility}/>
             </form>
-            <p>Don't have an account? <a href="#">Create a new account.</a></p>
+            <p>Don't have an account? Create a <Link style={{textDecoration: 'none'}} to="/signup">new account</Link>.</p>
         </div>
         </div>
     )

@@ -62,19 +62,23 @@
             border-radius: 8px;
             height: 56px;
             font-size: 20px;
+            cursor: pointer;
         }
         button.btn-disabled{
-            /* background: linear-gradient(to top, #4B36CC, #9C93D4, #9C93D4); */
-            background-color: #9C93D4;
+            background: linear-gradient(to bottom, #9085cf, #6f64ae);
             color: white;
             border-radius: 8px;
             height: 56px;
             font-size: 20px;
+            cursor: not-allowed;
         }
         .password-icon{
             position: absolute;
             color: #999999;
             transform: translate(31rem, 6rem);
         }
+    }
+    p{
+        font-size: 20px;
     }
 }
