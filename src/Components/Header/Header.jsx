@@ -1,10 +1,16 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import './Header.css';
 import headerImage from '../../Assets/Images/header-image.webp';
 import { Link } from 'react-router-dom';
+import UserContext from '../../Context/UserContext';
 
 const Header = () => {
+    const { setUser } = useContext(UserContext);
+    const [email, setEmail] = useState('');
 
+    const handleSubmit = () => {
+        setUser({email});
+    }
     return (
         <>
         <div className="atlassian-ai-learn-more">
@@ -16,8 +22,13 @@ const Header = () => {
                 <p>Keep everything in the same place—even if your team isn't.</p>
 
                 <div className="sign-up">
-                    <input type="email" placeholder='Email'/>
-                    <Link to="/signup" style={{textDecoration: 'none'}}><button type='submit'>Sign up - it's free!</button></Link>
+                    <input 
+                    type="email" 
+                    placeholder='Email' 
+                    onChange={(e) => setEmail(e.target.value)}
+                    value={email}
+                    />
+                    <Link to="/signup" style={{textDecoration: 'none'}}><button type='submit' onClick={handleSubmit}>Sign up - it's free!</button></Link>
                 </div>
             </div>
             <div className="right-header-section">

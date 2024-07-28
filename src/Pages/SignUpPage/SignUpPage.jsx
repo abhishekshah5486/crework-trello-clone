@@ -1,13 +1,15 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import './SignUpPage.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye, faEyeSlash } from '@fortawesome/free-regular-svg-icons';
 import { Link } from 'react-router-dom';
+import UserContext from '../../Context/UserContext';
 
 const SignUpPage = () => {
+    const { user } = useContext(UserContext);
     const [showPassword, setShowPassword] = useState(false);    const [formValues, setFormValues] = useState({
         name: '',
-        email: '',
+        email: user.email,
         password: ''
     });
     const isFormComplete = Object.values(formValues).every((value) => value != '');
