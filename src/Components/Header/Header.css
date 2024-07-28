@@ -33,6 +33,7 @@
             font-weight: 400;
             font-size: 20px;
             width: 34vw;
+            margin-top: 10px;
         }
 
         .sign-up{
@@ -42,14 +43,21 @@
             input{
                 height: 3rem;
                 width: 18rem;
+                font-size: 16px;
                 border-radius: 5px;
                 padding-left: 20px;
                 outline: none;
                 border: none;
             }
+            input::placeholder{
+                font-size: 16px;
+                color: rgba(151, 160, 175, 1);
+            }
             button{
                 height: 3rem;
                 width: 10rem;
+                font-size: 16px;
+                font-weight: 550;
                 border-radius: 5px;
                 outline: none;
                 border: none;
@@ -61,6 +69,12 @@
                 cursor: pointer;
                 background-color: rgb(2, 67, 164);
             }
+        }
+    }
+
+    .right-header-section{
+        img{
+            height: 600px;
         }
     }
 }

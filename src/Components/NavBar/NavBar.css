@@ -27,6 +27,9 @@
         display: flex;
         gap: 40px;
     }
+    li{
+        list-style: none;
+    }
     li:hover{
         color: rgba(1, 101, 255, 1);
         cursor: pointer;
@@ -39,6 +42,10 @@
     align-items: center;
     font-size: 18px;
     font-weight: 500;
+    h2{
+        font-size: 18px;
+        font-weight: 500;
+    }
     div{
         display: flex;
         align-items: center;
