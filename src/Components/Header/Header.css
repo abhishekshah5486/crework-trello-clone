@@ -1,0 +1,66 @@
+
+.atlassian-ai-learn-more{
+    height: 8vh;
+    width: 100vw;
+    background-color: rgba(221, 235, 255, 1);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.header-section{
+    height: 580px;
+    width: 100vw;
+    background: linear-gradient(to bottom left, rgba(237, 80, 180, 1), rgba(155, 75, 175, 1), rgba(91, 67, 170, 1));
+    padding: 150px;
+    display: flex;
+    gap: 50px;
+
+    .left-header-section{
+        display: flex;
+        flex-direction: column;
+
+        h1{
+            color: white;
+            font-size: 45px;
+            font-weight: 600;
+            width: 34vw;
+            word-wrap: break-word;
+        }
+
+        p{
+            color: white;
+            font-weight: 400;
+            font-size: 20px;
+            width: 34vw;
+        }
+
+        .sign-up{
+            display: flex;
+            gap: 20px;
+            margin-top: 50px;
+            input{
+                height: 3rem;
+                width: 18rem;
+                border-radius: 5px;
+                padding-left: 20px;
+                outline: none;
+                border: none;
+            }
+            button{
+                height: 3rem;
+                width: 10rem;
+                border-radius: 5px;
+                outline: none;
+                border: none;
+                color: white;
+                background-color: rgba(1, 101, 255, 1);
+                transition: background-color 0.2s ease;
+            }
+            button:hover{
+                cursor: pointer;
+                background-color: rgb(2, 67, 164);
+            }
+        }
+    }
+}
