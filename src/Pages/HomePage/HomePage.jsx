@@ -11,6 +11,10 @@ import teamsIcon from '../../Assets/Images/teams-icon.svg';
 import analyticsIcon from '../../Assets/Images/analytics-icon.svg';
 import createIcon from '../../Assets/Images/create-icon.svg';
 import downloadIcon from '../../Assets/Images/download-icon.svg';
+import helpIcon from '../../Assets/Images/help-icon.svg';
+import introducingTags from '../../Assets/Images/introducing-tags.svg';
+import shareNotesInstantly from '../../Assets/Images/share-notes-instantly.svg';
+import accessAnywhere from '../../Assets/Images/access-anywhere.svg';
 
 const HomePage = () => {
   return (
@@ -61,6 +65,42 @@ const HomePage = () => {
                 <h2>Download the app</h2>
                 <p>Get the full experience</p>
             </div>
+        </div>
+      </div>
+      <div className="main-content">
+        <header>
+            <h1>Good morning, Joe!</h1>
+            <div class="help-feedback">
+                <p>Help & feedback</p>
+                <img src={helpIcon} alt="" />
+            </div>
+        </header>
+        <div className="info-cards">
+            <div className="info-cards-item">
+                <img src={introducingTags} alt="" />
+                <div className="info-card-content">
+                    <h2>Introducing tags</h2>
+                    <p>Easily categorize and find your notes by adding tags. Keep your workspace clutter-free and efficient.</p>
+                </div>
+            </div>
+            <div className="info-cards-item">
+                <img src={shareNotesInstantly} alt="" />
+                <div className="info-card-content">
+                    <h2>Share Notes Instantly</h2>
+                    <p>Effortlessly share your notes with others via email or link. Enhance collaboration with quick sharing options.</p>
+                </div>
+            </div>
+            <div className="info-cards-item">
+                <img src={accessAnywhere} alt="" />
+                <div className="info-card-content">
+                    <h2>Access Anywhere</h2>
+                    <p>Sync your notes across all devices. Stay productive whether you're on your phone, tablet, or computer.</p>
+                </div>
+            </div>
+        </div>
+        <div className="task-controls">
+            <input type="text" className='search-bar' placeholder='Search'/>
+            
         </div>
       </div>
     </div>
