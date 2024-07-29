@@ -9,8 +9,23 @@ mongoose.connect(process.env.MONGODB_URI).then(() => {
     console.log(err);
 })
 
+// User Schema
+const UserSchema = new mongoose.Schema({
+    name: {
+        type: String,
+        required: true
+    },
+    email: {
+        type: String,
+        required: true
+    },
+    password: {
+        type: String,
+        required: true
+    }
+})
+const UserModel = mongoose.model('users', UserSchema);
 const app = express();
-
 const port = process.env.PORT || 8086;
 
 // Define a route for the root URL
