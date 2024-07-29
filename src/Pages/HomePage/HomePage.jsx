@@ -14,12 +14,12 @@ import downloadIcon from '../../Assets/Images/download-icon.svg';
 
 const HomePage = () => {
   return (
-    <div className='user-home-page'>
+    <div className='user-home-page'> 
       <div className="sidebar">
         <div className="profile-section">
             <div className="profile">
                 <img src={dummyProfile} alt="" />
-                <h2 className='profile-name'>John Doe</h2>
+                <h2 className='profile-name'>John Gardner</h2>
             </div>
             <div className="profile-actions">
                 <div className="icon-container">
@@ -27,9 +27,7 @@ const HomePage = () => {
                     <img src={lightThemeIcon} alt="" />
                     <img src={doubleChevronIcon} alt="" />
                 </div>
-                <div className="logout-btn">
-                    <button>Logout</button>
-                </div>
+                <button className='logout-btn'>Logout</button>
             </div>
             <nav className="nav-container">
                 <div className="nav-container-item">
