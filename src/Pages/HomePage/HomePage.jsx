@@ -15,6 +15,14 @@ import helpIcon from '../../Assets/Images/help-icon.svg';
 import introducingTags from '../../Assets/Images/introducing-tags.svg';
 import shareNotesInstantly from '../../Assets/Images/share-notes-instantly.svg';
 import accessAnywhere from '../../Assets/Images/access-anywhere.svg';
+import searchIcon from '../../Assets/Images/search-icon.svg';
+import calendarIcon from '../../Assets/Images/calender-icon.svg';
+import automationIcon from '../../Assets/Images/automation-icon.svg';
+import filterIcon from '../../Assets/Images/filter-icon.svg';
+import shareIcon from '../../Assets/Images/share-icon.svg';
+import barFilterIcon from '../../Assets/Images/bar-filter-icon.svg';
+import addIcon from '../../Assets/Images/add-icon.svg';
+import clockIcon from '../../Assets/Images/clock-icon.svg';
 
 const HomePage = () => {
   return (
@@ -23,7 +31,7 @@ const HomePage = () => {
         <div className="profile-section">
             <div className="profile">
                 <img src={dummyProfile} alt="" />
-                <h2 className='profile-name'>John Gardner</h2>
+                <h2 className='profile-name'>Abhishek Kumar Shah</h2>
             </div>
             <div className="profile-actions">
                 <div className="icon-container">
@@ -69,7 +77,7 @@ const HomePage = () => {
       </div>
       <div className="main-content">
         <header>
-            <h1>Good morning, Joe!</h1>
+            <h1>Good morning, Abhishek!</h1>
             <div class="help-feedback">
                 <p>Help & feedback</p>
                 <img src={helpIcon} alt="" />
@@ -100,7 +108,94 @@ const HomePage = () => {
         </div>
         <div className="task-controls">
             <input type="text" className='search-bar' placeholder='Search'/>
-            
+            <img src={searchIcon} alt="" className='search-icon'/>
+            <div class="controls">
+                <button class="calendar-view-btn">Calendar view <img src={calendarIcon} alt=""/></button>
+                <button class="automation-btn">Automation <img src={automationIcon} alt="" /></button>
+                <button class="filter-btn">Filter <img src={filterIcon} alt="" /></button>
+                <button class="share-btn">Share <img src={shareIcon} alt="" /></button>
+                <button class="create-new-btn">Create new <img src={createIcon} alt="" /></button>
+            </div>
+        </div>
+        <div className="task-columns">
+            <div className="task-column">
+                <div className="task-status">
+                    <h2>To do</h2>
+                    <img src={barFilterIcon} alt="" />
+                </div>
+                <div className="task-card">
+                    <h3 className='task-card-title'>Implement User Authentication</h3>
+                    <p className='task-card-description'>Develop and integrate user authentication using email and password.</p>
+                    <button className='task-card-priority urgent'>Urgent</button>
+                    <div className="task-card-deadline">
+                        <img src={clockIcon} alt="" />
+                        <h3>2024-08-15</h3>
+                    </div>
+                    <p className='task-card-timestamp'>1 min ago</p>
+                </div>
+                <button class="add-new-task-btn">Add new <img src={addIcon} alt="" /></button>
+            </div>
+            <div className="task-column">
+                <div className="task-status">
+                    <h2>In progress</h2>
+                    <img src={barFilterIcon} alt="" />
+                </div>
+                <div className="task-card">
+                    <h3 className='task-card-title'>Design Home Page UI</h3>
+                    <p className='task-card-description'>Develop and integrate user authentication using email and password.</p>
+                    <button className='task-card-priority medium'>Medium</button>
+                    <div className="task-card-deadline">
+                        <img src={clockIcon} alt="" />
+                        <h3>2024-08-15</h3>
+                    </div>
+                    <p className='task-card-timestamp'>1 hr ago</p>
+                </div>
+                <div className="task-card">
+                    <h3 className='task-card-title'>Conduct User Feedback Survey</h3>
+                    <p className='task-card-description'>Collect and analyze user feedback to improve app features.</p>
+                    <button className='task-card-priority low'>Low</button>
+                    <div className="task-card-deadline">
+                        <img src={clockIcon} alt="" />
+                        <h3>2024-08-05</h3>
+                    </div>
+                    <p className='task-card-timestamp'>3 hr ago</p>
+                </div>
+                <button class="add-new-task-btn">Add new <img src={addIcon} alt="" /></button>
+            </div>
+            <div className="task-column">
+                <div className="task-status">
+                    <h2>Under review</h2>
+                    <img src={barFilterIcon} alt="" />
+                </div>
+                <div className="task-card">
+                    <h3 className='task-card-title'>Integrate Cloud Storage</h3>
+                    <p className='task-card-description'>Enable cloud storage for note backup and synchronization.</p>
+                    <button className='task-card-priority urgent'>Urgent</button>
+                    <div className="task-card-deadline">
+                        <img src={clockIcon} alt="" />
+                        <h3>2024-08-20</h3>
+                    </div>
+                    <p className='task-card-timestamp'>2 days ago</p>
+                </div>
+                <button class="add-new-task-btn">Add new <img src={addIcon} alt="" /></button>
+            </div>
+            <div className="task-column">
+                <div className="task-status">
+                    <h2>Finished</h2>
+                    <img src={barFilterIcon} alt="" />
+                </div>
+                <div className="task-card">
+                    <h3 className='task-card-title'>Test Cross-browser Compatibility</h3>
+                    <p className='task-card-description'>Ensure the app works seamlessly across different web browsers.</p>
+                    <button className='task-card-priority medium'>Medium</button>
+                    <div className="task-card-deadline">
+                        <img src={clockIcon} alt="" />
+                        <h3>2024-07-30</h3>
+                    </div>
+                    <p className='task-card-timestamp'>4 days ago</p>
+                </div>
+                <button class="add-new-task-btn">Add new <img src={addIcon} alt="" /></button>
+            </div>
         </div>
       </div>
     </div>
