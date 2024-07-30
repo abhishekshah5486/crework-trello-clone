@@ -15,7 +15,7 @@ const SignUpPage = () => {
         email: user.email,
         password: ''
     });
-    const isFormComplete = Object.values(formValues).every((value) => value != '');
+    const isFormComplete = Object.values(formValues).every((value) => value !== '');
     const handleChange = (e) => {
         const {name, value} = e.target;
         setFormValues({...formValues, [name]:value});

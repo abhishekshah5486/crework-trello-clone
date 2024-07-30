@@ -23,6 +23,14 @@ import shareIcon from '../../Assets/Images/share-icon.svg';
 import barFilterIcon from '../../Assets/Images/bar-filter-icon.svg';
 import addIcon from '../../Assets/Images/add-icon.svg';
 import clockIcon from '../../Assets/Images/clock-icon.svg';
+import TaskModal from '../../Components/TaskModal';
+import closeBtn from '../../Assets/Images/close-button.svg';
+import expandIcon from '../../Assets/Images/expand-button.svg';
+import starIcon from '../../Assets/Images/star-icon.svg';
+import statusIcon from '../../Assets/Images/status-icon.svg';
+import priorityIcon from '../../Assets/Images/priority-icon.svg';
+import dueDateIcon from '../../Assets/Images/calender-icon.svg';
+import descriptionIcom from '../../Assets/Images/description-icon.svg';
 
 const HomePage = () => {
   return (

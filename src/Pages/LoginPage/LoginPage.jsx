@@ -3,6 +3,8 @@ import './LoginPage.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye, faEyeSlash } from '@fortawesome/free-regular-svg-icons';
 import { Link } from 'react-router-dom';
+import { Alert } from '@mui/material';
+import { LoginUser } from '../../APICalls/users';
 
 const LoginPage = () => {
     const [showPassword, setShowPassword] = useState(false);    
@@ -15,16 +17,32 @@ const LoginPage = () => {
         const {name, value} = e.target;
         setFormValues({...formValues, [name]:value});
     }
-
-
     const togglePasswordVisibility = () => {
         setShowPassword(prev => !prev);
+    }
+    const onFinish = async (e) => {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+        const userDetails = Object.fromEntries(formData);
+        console.log(userDetails);
+
+        try {
+            const response = await LoginUser(userDetails);
+            console.log(response);
+            if (response.success){
+                <Alert>Login Successful.</Alert>
+            }else{
+                <Alert>{response.message}</Alert>
+            }
+        } catch (err) {
+            <Alert>Something went wrong, please try again later.</Alert>
+        }
     }
     return (
         <div className="login-page">
         <div className="login-form login-page-container">
             <h2>Welcome to <span className='logo-name'>Workflo</span>!</h2>
-            <form>
+            <form onSubmit={onFinish}>
                 <input
                 type="email"
                 placeholder="Email" 
