@@ -5,11 +5,12 @@ import { faEye, faEyeSlash } from '@fortawesome/free-regular-svg-icons';
 import { Link } from 'react-router-dom';
 
 const LoginPage = () => {
-    const [showPassword, setShowPassword] = useState(false);    const [formValues, setFormValues] = useState({
+    const [showPassword, setShowPassword] = useState(false);    
+    const [formValues, setFormValues] = useState({
         email: '',
         password: ''
     });
-    const isFormComplete = Object.values(formValues).every((value) => value != '');
+    const isFormComplete = Object.values(formValues).every((value) => value !== '');
     const handleChange = (e) => {
         const {name, value} = e.target;
         setFormValues({...formValues, [name]:value});

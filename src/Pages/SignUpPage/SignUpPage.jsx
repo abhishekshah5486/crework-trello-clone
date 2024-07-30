@@ -4,6 +4,9 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye, faEyeSlash } from '@fortawesome/free-regular-svg-icons';
 import { Link } from 'react-router-dom';
 import UserContext from '../../Context/UserContext';
+import Alert from '@mui/material/Alert';
+import { RegisterUser } from '../../APICalls/users';
+
 
 const SignUpPage = () => {
     const { user } = useContext(UserContext);
@@ -18,15 +21,33 @@ const SignUpPage = () => {
         setFormValues({...formValues, [name]:value});
     }
 
-
     const togglePasswordVisibility = () => {
         setShowPassword(prev => !prev);
+    }
+    const onFinish = async (e) => {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+        const userDetails = Object.fromEntries(formData);
+        console.log(userDetails);
+
+        try {
+            const response = await RegisterUser(userDetails);
+            console.log(response);
+            if (response.success){
+                <Alert severity='success'>Registration successful.</Alert>
+            }else{
+                <Alert severity='error'>{response.message}</Alert>
+            }
+        } catch (err) {
+            console.log(err.message);
+            <Alert severity='error'>Something went wrong. Please try again later.</Alert>
+        }
     }
     return (
         <div className="signup-page">
             <div className="signup-form signup-page-container">
                 <h2>Welcome to <span className='logo-name'>Workflo</span>!</h2>
-                <form>
+                <form onSubmit={onFinish}>
                     <input
                         type="text"
                         placeholder="Full Name" 
