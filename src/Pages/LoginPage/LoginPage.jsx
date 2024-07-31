@@ -1,13 +1,15 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import './LoginPage.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye, faEyeSlash } from '@fortawesome/free-regular-svg-icons';
 import { Link } from 'react-router-dom';
 import { Alert } from '@mui/material';
 import { LoginUser } from '../../APICalls/users';
+import UserContext from '../../Context/UserContext';
 
 const LoginPage = () => {
-    const [showPassword, setShowPassword] = useState(false);    
+    const [showPassword, setShowPassword] = useState(false);  
+    const { user, setUser } = useContext(UserContext);  
     const [formValues, setFormValues] = useState({
         email: '',
         password: ''
@@ -28,6 +30,12 @@ const LoginPage = () => {
 
         try {
             const response = await LoginUser(userDetails);
+            // Saving the user context
+            setUser({
+                ...user, 
+                email: userDetails.email, 
+                password: userDetails.password
+            })
             console.log(response);
             if (response.success){
                 <Alert>Login Successful.</Alert>

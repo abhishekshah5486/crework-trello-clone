@@ -6,8 +6,8 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import dayjs from 'dayjs';
 
 export default function BasicDatePicker({setDeadline}) {
-    const handleDateChange = (e) => {
-        setDeadline(e.target.value);
+    const handleDateChange = () => {
+        setDeadline(dayjs.Dayjs);
     }
 
     const currentDate = new Date;
@@ -17,7 +17,6 @@ export default function BasicDatePicker({setDeadline}) {
             <DatePicker 
             defaultValue={dayjs(currentDate)}
             onChange={handleDateChange}
-            value={dayjs.Dayjs}
             slotProps={{
                 
             }}

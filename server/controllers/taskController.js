@@ -10,13 +10,14 @@ exports.createTask = async (req, res) => {
             priority: req.body.priority,
             deadline: req.body.deadline,
             description: req.body.description,
-            userID: req.body.userID
         })
         const savedTask = await newTask.save();
 
-        res.status(201).send({
+        // Respond with the created task
+        res.status(201).json({
             success: true,
-            message: "Task created successfully."
+            message: "Task created successfully.",
+            task: savedTask
         });
     } catch (err) {
         return res.status(500).json({

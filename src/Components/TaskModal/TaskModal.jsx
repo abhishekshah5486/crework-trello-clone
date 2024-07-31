@@ -11,6 +11,7 @@ import descriptionIcom from '../../Assets/Images/description-icon.svg';
 import addIcon from '../../Assets/Images/add-icon.svg';
 import selectedOptionIcon from '../../Assets/Images/selectedOptionIcon.svg';
 import BasicDatePicker from '../BasicDatePicker';
+import { createTask } from '../../APICalls/tasks';
 
 const TaskModal = () => {
     const taskTitleTextAreaRef = useRef(null);
@@ -34,15 +35,21 @@ const TaskModal = () => {
     const handlePriorityChange = (e) => {
         setPriority(e.target.value);
     }
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
         const taskModalData = {
            title,
            status,
            priority,
            deadline,
-           description
+           description,
         }
         console.log(taskModalData);
+        try {
+            const response = await createTask(taskModalData);
+            console.log(response);
+        } catch (err) {
+            console.log(err);
+        }
     }
     const handleCancel = () => {
 
