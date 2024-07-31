@@ -5,13 +5,19 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import dayjs from 'dayjs';
 
-export default function BasicDatePicker() {
+export default function BasicDatePicker({setDeadline}) {
+    const handleDateChange = (e) => {
+        setDeadline(e.target.value);
+    }
+
     const currentDate = new Date;
     return (
         <LocalizationProvider dateAdapter={AdapterDayjs}>
         <DemoContainer components={['DatePicker']}>
             <DatePicker 
             defaultValue={dayjs(currentDate)}
+            onChange={handleDateChange}
+            value={dayjs.Dayjs}
             slotProps={{
                 
             }}
