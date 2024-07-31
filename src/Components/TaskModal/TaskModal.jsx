@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import './TaskModal.css';
 import closeBtn from '../../Assets/Images/close-button.svg';
 import expandIcon from '../../Assets/Images/expand-button.svg';
@@ -9,28 +9,65 @@ import priorityIcon from '../../Assets/Images/priority-icon.svg';
 import dueDateIcon from '../../Assets/Images/calender-icon.svg';
 import descriptionIcom from '../../Assets/Images/description-icon.svg';
 import addIcon from '../../Assets/Images/add-icon.svg';
-import dropdownIcon from '../../Assets/Images/dropdown-icon.svg';
 import selectedOptionIcon from '../../Assets/Images/selectedOptionIcon.svg';
-import QuillTextEditor from '../QuillTextEditor';
+import BasicDatePicker from '../BasicDatePicker';
+import { DatePicker } from 'rsuite';
 
 const TaskModal = () => {
-  const textAreaRef = useRef(null);
+  const taskTitleTextAreaRef = useRef(null);
+  const taskDescriptionTextAreaRef = useRef(null);
+  const priorityValueRef = useRef(null);
+  const overlayRef = useRef(null);
+  const modalRef = useRef(null);
+
+  const handlePriorityValues = () => {
+    priorityValueRef.current.classList.remove('display-hidden');
+  }
   const handleInput = () => {
-    const textarea = textAreaRef.current;
-    textarea.style.height = 'auto'; // Reset height
-    textarea.style.height = textarea.scrollHeight + 'px'; // Set new height based on scroll height
+    const taskTitleTextArea = taskTitleTextAreaRef.current;
+    const taskDescriptionTextArea = taskDescriptionTextAreaRef.current;
+    
+    if (taskTitleTextArea) {
+      taskTitleTextArea.style.height = 'auto';
+      taskTitleTextArea.style.height = taskTitleTextArea.scrollHeight + 'px';
+    }
+    
+    if (taskDescriptionTextArea) {
+      taskDescriptionTextArea.style.height = 'auto';
+      taskDescriptionTextArea.style.height = taskDescriptionTextArea.scrollHeight + 'px';
+    }
+  };
+  const handleKeyDown = (event) => {
+    if (event.key === 'Enter') {
+      event.preventDefault();
+    }
   };
   useEffect(() => {
-    const textArea = textAreaRef.current;
+    const taskTitleTextArea = taskTitleTextAreaRef.current;
+    const taskDescriptionTextArea = taskDescriptionTextAreaRef.current;
     handleInput();
-    textArea.addEventListener('input', handleInput);
+    if (taskTitleTextArea) {
+        taskTitleTextArea.addEventListener('input', handleInput);
+        taskTitleTextArea.addEventListener('keydown', handleKeyDown);
+    }
+    if (taskDescriptionTextArea) {
+        taskDescriptionTextArea.addEventListener('input', handleInput);
+        taskDescriptionTextArea.addEventListener('keydown', handleKeyDown);
+    }
     return () => {
-        textArea.removeEventListener('input', handleInput);
+        if (taskTitleTextArea) {
+            taskTitleTextArea.removeEventListener('input', handleInput);
+            taskTitleTextArea.removeEventListener('keydown', handleKeyDown);
+        }
+        if (taskDescriptionTextArea) {
+            taskDescriptionTextArea.removeEventListener('input', handleInput);
+            taskDescriptionTextArea.removeEventListener('keydown', handleKeyDown);
+        }
     }
   }, [])
   return (
-    <div className="overlay">
-        <div className='task-modal'>
+    <div className="overlay" ref={overlayRef}>
+        <div className='task-modal'  ref={modalRef}>
             <div className="task-modal-header">
                 <div className="left-header-items">
                     <img src={closeBtn} alt="" />
@@ -45,88 +82,92 @@ const TaskModal = () => {
                 <textarea 
                 className="task-title" 
                 placeholder="Title"
-                ref={textAreaRef}
+                ref={taskTitleTextAreaRef}
                 rows={1}
                 ></textarea>
                 <div className="task-properties">
-                    <div className="task-property-item">
+                    <div className="label-groups">
                         <div className="property-label-group">
                             <img src={statusIcon} alt="" className='property-icon'/>
                             <h2 className='property-label'>Status</h2>
                         </div>
-                        {/* <select name="" id="" className='property-value'>
-                            <option value="" disabled selected>Not Selected</option>
-                            <option value="low">Low</option>
-                            <option value="medium">Medium</option>
-                            <option value="urgent">Urgent</option>
-                        </select> */}
-                        <div className="property-value">
-                            <button>Not selected <img src={dropdownIcon} alt="" /></button>
-                            <div className="dropdown-content">
-                                <div className="low">
-                                    <img src={selectedOptionIcon} alt="" className='hidden'/>
-                                    <p>Low</p>
-                                </div>
-                                <div className="medium">
-                                    <div className="medium">
-                                        <img src={selectedOptionIcon} alt=""/>
-                                        <p>Medium</p>
-                                    </div>
-                                </div>
-                                <div className="urgent">
-                                    <div className="urgent">
-                                        <img src={selectedOptionIcon} alt="" className='hidden'/>
-                                        <p>Urgent</p>
-                                    </div>
-                                </div>
-                            </div>
+                        <div className="property-label-group">
+                            <img src={priorityIcon} alt="" className='property-icon'/>
+                            <h2 className='property-label'>Priority</h2>
+                        </div>
+                        <div className="property-label-group">
+                            <img src={dueDateIcon} alt="" className='property-icon'/>
+                            <h2 className='property-label'>Deadline</h2>
+                        </div>
+                        <div className="property-label-group">
+                            <img src={descriptionIcom} alt="" className='property-icon'/>
+                            <h2 className='property-label'>Description</h2>
                         </div>
                     </div>
-                    <div className="task-property-item">
-                        <div className="property-label-group">
-                                <img src={priorityIcon} alt="" className='property-icon'/>
-                                <h2 className='property-label'>Priority</h2>
+                    <div className="property-values">
+                        <div className="property-value status">
+                            <select className="dropdown-content display-hidden custom-select" 
+                            ref={priorityValueRef}
+                            defaultValue="not-selected"
+                            >   
+                                <option value="not-selected" disabled className="placeholder-option">
+                                    Not Selected
+                                </option>
+                                <option value="to-do" className="option to-do">
+                                    To do
+                                </option>
+                                <option value="in-progress" className="option in-progress">
+                                    In progress
+                                </option>
+                                <option value="under-review" className="option under-review">
+                                    Under review
+                                </option>
+                                <option value="finished" className="option finished">
+                                    Finshed
+                                </option>
+                            </select>
                         </div>
-                        <div className="property-value">
-                            {/* <button>Not selected <img src={dropdownIcon} alt="" /></button> */}
-                            <input type='date' className='date-picker' placeholder=''/>
-                            <div className="dropdown-content">
-                                <div className="low">
-                                    <img src={selectedOptionIcon} alt="" className='hidden'/>
-                                    <p>Low</p>
-                                </div>
-                                <div className="medium">
-                                    <div className="medium">
-                                        <img src={selectedOptionIcon} alt=""/>
-                                        <p>Medium</p>
-                                    </div>
-                                </div>
-                                <div className="urgent">
-                                    <div className="urgent">
-                                        <img src={selectedOptionIcon} alt="" className='hidden'/>
-                                        <p>Urgent</p>
-                                    </div>
-                                </div>
-                            </div>
+                        <div className="property-value priority">
+                            <select className="dropdown-content display-hidden custom-select" 
+                            ref={priorityValueRef}
+                            defaultValue="not-selected"
+                            >       
+                                    <option value="not-selected" disabled className="placeholder-option">
+                                        Not Selected
+                                    </option>
+                                    <option value="low" className="option low">
+                                        Low
+                                    </option>
+                                    <option value="medium" className="option medium">
+                                        Medium
+                                    </option>
+                                    <option value="urgent" className="option urgent">
+                                        Urgent
+                                    </option>
+                            </select>
                         </div>
-                    </div>
-                    <div className="task-property-item">
-                        <div className="property-label-group">
-                                <img src={dueDateIcon} alt="" className='property-icon'/>
-                                <h2 className='property-label'>Deadline</h2>
+                        <div className="property-value deadline">
+                            <BasicDatePicker/>
                         </div>
-                    </div>
-                    <div className="task-property-item description">
-                        <div className="property-label-group">
-                                <img src={descriptionIcom} alt="" className='property-icon'/>
-                                <h2 className='property-label'>Description</h2>
+                        <div className="property-value description">
+                            <textarea 
+                            className="task-description" 
+                            placeholder="Add a more detailed description..."
+                            ref={taskDescriptionTextAreaRef}
+                            rows={2}
+                            ></textarea>
                         </div>
-                        <QuillTextEditor/>
                     </div>
                 </div>
                 <div className="add-custom-property">
-                    <img src={addIcon} alt="" />
+                    <svg className='add-custom-property-icon' width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M6 12H12M12 12H18M12 12V6M12 12V18" stroke="black" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
                     <h2>Add custom property</h2>
+                </div>
+                <div className="create-task-actions">
+                    <button className='cancel-task'>Cancel</button>
+                    <button className='create=task disabled'>Create</button>
                 </div>
             </div>
         </div>
