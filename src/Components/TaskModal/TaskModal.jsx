@@ -9,9 +9,9 @@ import priorityIcon from '../../Assets/Images/priority-icon.svg';
 import dueDateIcon from '../../Assets/Images/calender-icon.svg';
 import descriptionIcom from '../../Assets/Images/description-icon.svg';
 import addIcon from '../../Assets/Images/add-icon.svg';
-import selectedOptionIcon from '../../Assets/Images/selectedOptionIcon.svg';
-import BasicDatePicker from '../BasicDatePicker';
 import { createTask } from '../../APICalls/tasks';
+import DateComponent from '../DateComponent';
+import { Navigate, useNavigate } from 'react-router-dom';
 
 const TaskModal = () => {
     const taskTitleTextAreaRef = useRef(null);
@@ -24,8 +24,10 @@ const TaskModal = () => {
     const [status, setStatus] = useState('');
     const [priority, setPriority] = useState('');
     const [deadline, setDeadline] = useState(null);
+    const [isDateValid, setIsDateValid] = useState(false);
+    const navigate = useNavigate();
     
-    const isCreateButtonDisabled = (title === '' || status === '');
+    const isCreateButtonDisabled = !(title && status && priority && isDateValid);
     if (!isCreateButtonDisabled){
         createTaskBtnRef.current.classList.remove('disabled');
     }
@@ -50,9 +52,10 @@ const TaskModal = () => {
         } catch (err) {
             console.log(err);
         }
+        navigate('/home');
     }
     const handleCancel = () => {
-
+        navigate('/home');
     }
     const handleInput = () => {
         const taskTitleTextArea = taskTitleTextAreaRef.current;
@@ -179,7 +182,12 @@ const TaskModal = () => {
                                 </select>
                             </div>
                             <div className="property-value deadline">
-                                <BasicDatePicker setDeadline={setDeadline}/>
+                                <DateComponent
+                                deadline = {deadline}
+                                setDeadline = {setDeadline}
+                                setIsDateValid = {setIsDateValid}
+                                />
+
                             </div>
                             <div className="property-value description">
                                 <textarea 
@@ -194,7 +202,7 @@ const TaskModal = () => {
                     </div>
                     <div className="add-custom-property">
                         <svg className='add-custom-property-icon' width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M6 12H12M12 12H18M12 12V6M12 12V18" stroke="black" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M6 12H12M12 12H18M12 12V6M12 12V18" stroke="black" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
                         </svg>
                         <h2>Add custom property</h2>
                     </div>

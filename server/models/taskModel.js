@@ -22,7 +22,8 @@ const TaskSchema = new mongoose.Schema({
         enum: ['low', 'medium', 'urgent']
     },
     deadline: {
-        type: Date,
+        type: String,
+        trim: true
     },
     description: {
         type: String,

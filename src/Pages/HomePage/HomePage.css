@@ -96,6 +96,7 @@
                 align-items: center;
                 justify-content: center;
                 gap: 5px;
+                cursor: pointer;
 
                 img{
                     height: 24px;
@@ -241,6 +242,7 @@
                 font-weight: 500;
                 background: linear-gradient(to bottom, #6051c1, #352592);
                 gap: 10px;
+                cursor: pointer;
                 img{
                     height: 24px;
                     width: 24px;

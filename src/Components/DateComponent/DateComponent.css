@@ -1,0 +1,13 @@
+.date-picker{
+    .deadline{
+        font-size: 16px;
+        border: 1px solid #ccc;
+        padding: 8px 12px;
+        border-radius: 4px;
+    }
+    .error{
+        color: rgb(202, 14, 14);
+        display: none;
+        font-size: 15px;
+    }
+}

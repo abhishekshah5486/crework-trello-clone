@@ -23,16 +23,14 @@ import shareIcon from '../../Assets/Images/share-icon.svg';
 import barFilterIcon from '../../Assets/Images/bar-filter-icon.svg';
 import addIcon from '../../Assets/Images/add-icon.svg';
 import clockIcon from '../../Assets/Images/clock-icon.svg';
-import TaskModal from '../../Components/TaskModal';
-import closeBtn from '../../Assets/Images/close-button.svg';
-import expandIcon from '../../Assets/Images/expand-button.svg';
-import starIcon from '../../Assets/Images/star-icon.svg';
-import statusIcon from '../../Assets/Images/status-icon.svg';
-import priorityIcon from '../../Assets/Images/priority-icon.svg';
-import dueDateIcon from '../../Assets/Images/calender-icon.svg';
-import descriptionIcom from '../../Assets/Images/description-icon.svg';
+import { useNavigate } from 'react-router-dom';
 
 const HomePage = () => {
+  const navigate = useNavigate();
+  const handleAddNewTaskClick = () => {
+    console.log("Hi");
+    navigate('/home/create-task');
+  }
   return (
     <div className='user-home-page'> 
       <div className="sidebar">
@@ -72,7 +70,7 @@ const HomePage = () => {
                 </div>
             </nav>
             <div className="create-task-btn">
-                <button>Create new task <img src={createIcon} alt=""/></button>
+                <button onClick={handleAddNewTaskClick}>Create new task <img src={createIcon} alt=""/></button>
             </div>
         </div>
         <div className="download-workflo-app">
@@ -122,7 +120,7 @@ const HomePage = () => {
                 <button class="automation-btn">Automation <img src={automationIcon} alt="" /></button>
                 <button class="filter-btn">Filter <img src={filterIcon} alt="" /></button>
                 <button class="share-btn">Share <img src={shareIcon} alt="" /></button>
-                <button class="create-new-btn">Create new <img src={createIcon} alt="" /></button>
+                <button class="create-new-btn" onClick={handleAddNewTaskClick}>Create new <img src={createIcon} alt="" /></button>
             </div>
         </div>
         <div className="task-columns">
@@ -141,7 +139,7 @@ const HomePage = () => {
                     </div>
                     <p className='task-card-timestamp'>1 min ago</p>
                 </div>
-                <button class="add-new-task-btn">Add new <img src={addIcon} alt="" /></button>
+                <button class="add-new-task-btn" onClick={handleAddNewTaskClick}>Add new <img src={addIcon} alt="" /></button>
             </div>
             <div className="task-column">
                 <div className="task-status">
@@ -168,7 +166,7 @@ const HomePage = () => {
                     </div>
                     <p className='task-card-timestamp'>3 hr ago</p>
                 </div>
-                <button class="add-new-task-btn">Add new <img src={addIcon} alt="" /></button>
+                <button class="add-new-task-btn" onClick={handleAddNewTaskClick}>Add new <img src={addIcon} alt="" /></button>
             </div>
             <div className="task-column">
                 <div className="task-status">
@@ -185,7 +183,7 @@ const HomePage = () => {
                     </div>
                     <p className='task-card-timestamp'>2 days ago</p>
                 </div>
-                <button class="add-new-task-btn">Add new <img src={addIcon} alt="" /></button>
+                <button className="add-new-task-btn" onClick={handleAddNewTaskClick}>Add new <img src={addIcon} alt="" /></button>
             </div>
             <div className="task-column">
                 <div className="task-status">
@@ -202,7 +200,7 @@ const HomePage = () => {
                     </div>
                     <p className='task-card-timestamp'>4 days ago</p>
                 </div>
-                <button class="add-new-task-btn">Add new <img src={addIcon} alt="" /></button>
+                <button className="add-new-task-btn" onClick={handleAddNewTaskClick}>Add new <img src={addIcon} alt="" /></button>
             </div>
         </div>
       </div>
