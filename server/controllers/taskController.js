@@ -57,10 +57,32 @@ exports.updateTaskById = async (req, res) => {
     }
 }
 
-
-
 // Delete a task by ID
-
+exports.deleteTaskById = async (req, res) => {
+    try {
+        const taskId = req.params.id;
+        const deletedTask = await taskModel.findByIdAndDelete(taskId);
+        if (deletedTask) {
+            // Respond with the deleted task
+            res.status(200).json({
+                success: true,
+                message: "Task deleted successfully.",
+                task: deletedTask
+            });
+        } else {
+            return res.status(404).json({
+                success: false,
+                message: "Task not found."
+            });
+        }
+    } catch (err) {
+        return res.status(500).json({
+            success: false,
+            message: "Server error.",
+            error: err.message
+        });
+    }
+}
 
 // Retrieve all tasks by status
 exports.retrieveTasksByStatus = async (req, res) => {
