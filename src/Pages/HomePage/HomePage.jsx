@@ -74,6 +74,10 @@ const HomePage = () => {
     navigate('/home/create-task');
   }
 
+  const handleLogout = () => {
+    
+  }
+
   return (
     <div className='user-home-page'> 
       <div className="sidebar">
@@ -88,7 +92,7 @@ const HomePage = () => {
                     <img src={lightThemeIcon} alt="" />
                     <img src={doubleChevronIcon} alt="" />
                 </div>
-                <button className='logout-btn'>Logout</button>
+                <button className='logout-btn' onClick={handleLogout}>Logout</button>
             </div>
             <nav className="nav-container">
                 <div className="nav-container-item">

@@ -38,12 +38,12 @@ const LoginPage = () => {
             })
             console.log(response);
             if (response.success){
-                <Alert>Login Successful.</Alert>
+                alert("Logged in syccessfully");
             }else{
-                <Alert>{response.message}</Alert>
+                alert(response.message);
             }
         } catch (err) {
-            <Alert>Something went wrong, please try again later.</Alert>
+            alert('Something went wrong, please try again later.');
         }
     }
     return (

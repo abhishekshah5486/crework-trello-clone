@@ -1,10 +1,6 @@
 const userModel = require('../models/userModel');
 const bcrypt = require('bcrypt');
 
-exports.getUserDetails = async (req, res) => {
-    res.send('Welcome to the backend server!');
-}
-
 exports.registerUser = async(req, res) => {
     try {
         // Check if the email already registered
@@ -65,5 +61,107 @@ exports.loginUser = async(req, res) => {
             error: err.message
         });
 
+    }
+}
+
+// Retrieve a user by id
+exports.retrieveUserById = async(req, res) => {
+    try {
+        const user = await userModel.findById(req.params.id);
+        if (user){
+            return res.status(200).send({
+                success: true,
+                message: "User retrieved successfully.",
+                user: user
+            })
+        }else{
+            return res.send({
+                success: false,
+                message: "User not found."
+            })
+        }
+    } catch (err) {
+        return res.status(500).json({
+            success: false,
+            message: "Server error.",
+            error: err.message
+        });
+    }
+}
+
+// Update a user by id
+exports.updateUserById = async(req, res) => {
+    try {
+        const updatedUser = await userModel.findByIdAndUpdate
+        (req.params.id, req.body, {new: true});
+        if (updatedUser){
+            return res.status(200).send({
+                success: true,
+                message: "User updated successfully.",
+                user: updatedUser
+            })
+        }
+        else{
+            return res.send({
+                success: false,
+                message: "User not found."
+            })
+        }
+    }
+    catch (err) {
+        return res.status(500).json({
+            success: false,
+            message: "Server error.",
+            error: err.message
+        });
+    }
+}
+
+// Delete a user by id
+exports.deleteUserById = async(req, res) => {
+    try {
+        const deletedUser = await userModel.findByIdAndDelete(req.params.id);
+        if (deletedUser){
+            return res.status(200).send({
+                success: true,
+                message: "User deleted successfully.",
+                user: deletedUser
+            })
+        }
+        else{
+            return res.send({
+                success: false,
+                message: "User not found."
+            })
+        }
+    }
+    catch (err) {
+        return res.status(500).json({
+            success: false,
+            message: "Server error.",
+            error: err.message
+        });
+    }
+}
+
+// Logout a user
+exports.logoutUser = async(req, res) => {
+    try {
+        const userId = req.params.id;
+        // Implement logout logic here
+        const loggedOutUser = await userModel.findByIdAndUpdate(userId, {isLoggedIn: false}, {new: true});
+
+        return res.status(200).send({
+            success: true,
+            message: "Logout successful.",
+            user: loggedOutUser
+        })
+    }
+    catch (err) {
+        return res.status(500).json({
+            success: false,
+            message: "Server error.",
+            error: err.message
+        });
     }
 }
