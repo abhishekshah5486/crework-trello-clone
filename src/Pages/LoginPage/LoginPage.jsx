@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import './LoginPage.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye, faEyeSlash } from '@fortawesome/free-regular-svg-icons';
@@ -10,7 +10,7 @@ import { useNavigate } from 'react-router-dom';
 const LoginPage = () => {
     const navigate = useNavigate();
     const [showPassword, setShowPassword] = useState(false);  
-    const { setUser } = useContext(UserContext);  
+    const { user, setUser } = useContext(UserContext);  
     const [formValues, setFormValues] = useState({
         email: '',
         password: ''
@@ -49,6 +49,12 @@ const LoginPage = () => {
             alert('Something went wrong, please try again later.');
         }
     }
+
+    useEffect(() => {
+        if (user){
+            return navigate('/home');
+        }
+    }, [user, navigate]);
     return (
         <div className="login-page">
         <div className="login-form login-page-container">
