@@ -1,31 +1,37 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import UserContext from "./UserContext";
+import { getCurrentUser } from "../APICalls/users";
 
 const UserContextProvider = ({children}) => {
-    const [user, setUser] = useState({});
+    const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
 
     const initializeUser = async () => {
         const token = localStorage.getItem('token');
         if (token) {
             try {
-                const response = await axiosInstance.get('/get-current-user');
-                if (response.data.success) {
-                    setUser(response.data.user); 
+                const response = await getCurrentUser();
+                if (response.success) {
+                    setUser(response.user); 
+                }
+                else
+                {
+                    setUser(null);
                 }
             } catch (error) {
                 console.error("Error fetching user", error);
+                setUser(null);
             }
         }
         setLoading(false); 
     };
 
-    useEffect(() => {1
+    useEffect(() => {
         initializeUser();
     }, []);
 
     return(
-        <UserContext.Provider value={{user, setUser}}>
+        <UserContext.Provider value={{user, setUser, loading, setLoading}}>
             {children}
         </UserContext.Provider>
     )

@@ -1,15 +1,18 @@
-import React, {useContext} from 'react';
+import React, {useContext, useEffect} from 'react';
 import { useNavigate } from 'react-router-dom';
 import UserContext from '../../Context/UserContext';
 
 function ProtectedRoute({children}) {
-    const { user } = useContext(UserContext);
+    const { user, loading } = useContext(UserContext);
     const navigate = useNavigate();
 
-    if (!user)
-    {   
-        // Navigate to the landing page if the user is not logged in
-        return navigate('/');
+    useEffect(() => {
+        if (!loading && !user){
+            navigate('/');
+        }
+    }, [loading, user, navigate]);
+    if (loading){
+        return <div>Loading...</div>
     }
     return children;
 }

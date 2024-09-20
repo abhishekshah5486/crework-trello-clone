@@ -29,3 +29,13 @@ export const LogoutUser = async (userId) => {
         console.log(err.message);
     }
 }
+
+// Get current user
+export const getCurrentUser = async () => {
+    try {
+        const response = await axiosInstance.get('/get-current-user');
+        return response.data;
+    } catch (err) {
+        console.log(err.message);
+    }
+}
