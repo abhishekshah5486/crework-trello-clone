@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const authMiddleware = require('../middlewares/authMiddleware');
 
 const userControllers = require('../controllers/userController');
 const { ro } = require('date-fns/locale');
@@ -24,5 +25,5 @@ router.delete('/users/:id', userControllers.deleteUserById);
 router.post('/users/logout/:id', userControllers.logoutUser);
 
 // Validate the bearer token and return the user
-router.get('/get-current-user', userControllers.getCurrentUser);
+router.get('/get-current-user', authMiddleware, userControllers.getCurrentUser);
 module.exports = router;

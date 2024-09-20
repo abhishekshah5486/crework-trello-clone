@@ -11,7 +11,7 @@ exports.registerUser = async(req, res) => {
         if (emailAlreadyRegistered){
             return res.send({
                 success: false,
-                message: "Email already exists."
+                message: "Email already exists. Please login to continue."
             })
         }
         // Salting and Password Hashing
@@ -23,7 +23,8 @@ exports.registerUser = async(req, res) => {
         await newUser.save();
         return res.status(201).send({
             success: true,
-            message: "Registration successful."
+            message: "Registration successful.",
+            user: newUser
         })
     } catch (err) {
         return res.status(500).json({
@@ -57,6 +58,8 @@ exports.loginUser = async(req, res) => {
         const userId = emailExists.userId;
         const token = jwt.sign({userId: userId}, process.env.JWT_SECRET, {expiresIn: '1d'});
 
+        // Update the user's login status
+        await userModel.findOneAndUpdate(emailExists.userId, { isLoggedIn: true });
         return res.status(201).send({
             success: true,
             message: "Login successful.",
@@ -176,6 +179,29 @@ exports.logoutUser = async(req, res) => {
 }
 
 // Validate the bearer token and return the user
-exports.getCurrentUser = async (req, middleware, res) => {
-    
+exports.getCurrentUser = async (req, res) => {
+    try {
+        const userId = req.body.userId;
+        const user = await userModel.findOne({userId}).select('-password');
+
+        if (user){
+            return res.status(200).send({
+                success: true,
+                message: "You are authorized.",
+                user: user
+            })
+        }
+        else{
+            return res.send({
+                success: false,
+                message: "not authorized."
+            })
+        }
+    } catch (err) {
+        return res.status(500).json({
+            success: false,
+            message: "Server error.",
+            error: err.message
+        });
+    }
 }
