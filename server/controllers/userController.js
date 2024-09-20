@@ -50,7 +50,7 @@ exports.loginUser = async(req, res) => {
         if (!validPassword){
             return res.send({
                 success: false,
-                message: "Invalid password."
+                message: "Invalid Email/Password."
             })
         }
         // Generate a jwt token
@@ -60,7 +60,8 @@ exports.loginUser = async(req, res) => {
         return res.status(201).send({
             success: true,
             message: "Login successful.",
-            token: token
+            token: token,
+            user: emailExists
         })
     } catch (err) {
         return res.status(500).json({
@@ -172,4 +173,9 @@ exports.logoutUser = async(req, res) => {
             error: err.message
         });
     }
+}
+
+// Validate the bearer token and return the user
+exports.getCurrentUser = async (req, middleware, res) => {
+    
 }

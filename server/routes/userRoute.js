@@ -22,4 +22,7 @@ router.delete('/users/:id', userControllers.deleteUserById);
 
 // Logout user
 router.post('/users/logout/:id', userControllers.logoutUser);
+
+// Validate the bearer token and return the user
+router.get('/get-current-user', userControllers.getCurrentUser);
 module.exports = router;
