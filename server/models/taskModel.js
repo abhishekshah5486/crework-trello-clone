@@ -30,7 +30,7 @@ const TaskSchema = new mongoose.Schema({
         trim: true
     },
     userId: {
-        type: mongoose.Schema.Types.ObjectId,
+        type: String,
         required: true,
         ref: 'users'
     }

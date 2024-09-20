@@ -192,7 +192,7 @@
                 font-weight: 400;
             }
         }
-        .create-task-actions{
+        .update-task-actions{
             display: flex;
             justify-content: end;
             gap: 10px;

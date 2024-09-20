@@ -10,6 +10,7 @@ exports.createTask = async (req, res) => {
             priority: req.body.priority,
             deadline: req.body.deadline,
             description: req.body.description,
+            userId: req.body.userId
         })
         const savedTask = await newTask.save();
 

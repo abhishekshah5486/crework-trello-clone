@@ -19,7 +19,7 @@ const TaskModal = () => {
     const taskDescriptionTextAreaRef = useRef(null);
     const overlayRef = useRef(null);
     const modalRef = useRef(null);
-    const createTaskBtnRef = useRef(null);
+    const updateTaskBtnRef = useRef(null);
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
     const [status, setStatus] = useState('');
@@ -30,9 +30,9 @@ const TaskModal = () => {
     const navigate = useNavigate();
     const { user } = useContext(UserContext);
     
-    const isCreateButtonDisabled = !(title && status && priority && isDateValid && descriptionCharCount <= 300);
-    if (!isCreateButtonDisabled){
-        createTaskBtnRef.current.classList.remove('disabled');
+    const isUpdateButtonDisabled = !(title && status && priority && isDateValid && descriptionCharCount <= 300);
+    if (!isUpdateButtonDisabled){
+        updateTaskBtnRef.current.classList.remove('disabled');
     }
     const handleStatusChange = (e) => {
         setStatus(e.target.value);
@@ -234,11 +234,11 @@ const TaskModal = () => {
                             Cancel
                         </button>
                         <button 
-                        className='create-task disabled' 
+                        className='update-task disabled' 
                         onClick={handleSubmit}
-                        ref={createTaskBtnRef}
+                        ref={updateTaskBtnRef}
                         >
-                            Create
+                            Update
                         </button>
                     </div>
                 </div>
