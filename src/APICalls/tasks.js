@@ -29,3 +29,13 @@ export const deleteTask = async () => {
         console.log(err.message);
     }
 }
+
+// Retrieve all tasks by status
+export const retrieveTasksByStatus = async (status) => {
+    try {
+        const response = await axiosInstance.get(`/tasks/${status}`);
+        return response.data;
+    } catch (err) {
+        console.log(err.message);
+    }
+}

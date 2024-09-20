@@ -52,6 +52,7 @@ const TaskModal = () => {
         } catch (err) {
             console.log(err);
         }
+        alert('Task created successfully.');
         navigate('/home');
     }
     const handleCancel = () => {

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState, useEffect} from 'react';
 import dummyProfile from '../../Assets/Images/dummy-profile.png';
 import './HomePage.css';
 import notificationIcon from '../../Assets/Images/notification-icon.svg';
@@ -24,13 +24,56 @@ import barFilterIcon from '../../Assets/Images/bar-filter-icon.svg';
 import addIcon from '../../Assets/Images/add-icon.svg';
 import clockIcon from '../../Assets/Images/clock-icon.svg';
 import { useNavigate } from 'react-router-dom';
+import { retrieveTasksByStatus } from '../../APICalls/tasks';
+import { formatDistanceToNowStrict } from 'date-fns';
 
 const HomePage = () => {
   const navigate = useNavigate();
+
+  const [todoTasks, setTodoTasks] = useState([]);
+  const [inProgressTasks, setInProgressTasks] = useState([]);
+  const [underReviewTasks, setUnderReviewTasks] = useState([]);
+  const [finishedTasks, setFinishedTasks] = useState([]);
+
+  useEffect(() => {
+    const fetchTasks = async () => {
+      try {
+        const todo = await retrieveTasksByStatus('to-do');
+        const inProgress = await retrieveTasksByStatus('in-progress');
+        const underReview = await retrieveTasksByStatus('under-review');
+        const finished = await retrieveTasksByStatus('finished');
+        
+        setTodoTasks(todo.tasks);
+        setInProgressTasks(inProgress.tasks);
+        setUnderReviewTasks(underReview.tasks);
+        setFinishedTasks(finished.tasks);
+      } catch (err) {
+        console.error('Failed to fetch tasks:', err.message);
+      }
+    };
+    fetchTasks();
+  }, []);
+
+  const renderTaskCard = (task) => (
+    <div className="task-card" key={task.id}>
+      <h3 className='task-card-title'>{task.title}</h3>
+      <p className='task-card-description'>{task.description}</p>
+      <button className={`task-card-priority ${task.priority.toLowerCase()}`}>{task.priority}</button>
+      <div className="task-card-deadline">
+        <img src={clockIcon} alt="" />
+        <h3>{task.deadline}</h3>
+      </div>
+      <p className='task-card-timestamp'>
+      {formatDistanceToNowStrict(new Date(task.updatedAt), { addSuffix: true })}
+      </p>
+    </div>
+  );
+
   const handleAddNewTaskClick = () => {
     console.log("Hi");
     navigate('/home/create-task');
   }
+
   return (
     <div className='user-home-page'> 
       <div className="sidebar">
@@ -129,16 +172,7 @@ const HomePage = () => {
                     <h2>To do</h2>
                     <img src={barFilterIcon} alt="" />
                 </div>
-                <div className="task-card">
-                    <h3 className='task-card-title'>Implement User Authentication</h3>
-                    <p className='task-card-description'>Develop and integrate user authentication using email and password.</p>
-                    <button className='task-card-priority urgent'>Urgent</button>
-                    <div className="task-card-deadline">
-                        <img src={clockIcon} alt="" />
-                        <h3>2024-08-15</h3>
-                    </div>
-                    <p className='task-card-timestamp'>1 min ago</p>
-                </div>
+                {todoTasks.map(task => renderTaskCard(task))}
                 <button class="add-new-task-btn" onClick={handleAddNewTaskClick}>Add new <img src={addIcon} alt="" /></button>
             </div>
             <div className="task-column">
@@ -146,26 +180,7 @@ const HomePage = () => {
                     <h2>In progress</h2>
                     <img src={barFilterIcon} alt="" />
                 </div>
-                <div className="task-card">
-                    <h3 className='task-card-title'>Design Home Page UI</h3>
-                    <p className='task-card-description'>Develop and integrate user authentication using email and password.</p>
-                    <button className='task-card-priority medium'>Medium</button>
-                    <div className="task-card-deadline">
-                        <img src={clockIcon} alt="" />
-                        <h3>2024-08-15</h3>
-                    </div>
-                    <p className='task-card-timestamp'>1 hr ago</p>
-                </div>
-                <div className="task-card">
-                    <h3 className='task-card-title'>Conduct User Feedback Survey</h3>
-                    <p className='task-card-description'>Collect and analyze user feedback to improve app features.</p>
-                    <button className='task-card-priority low'>Low</button>
-                    <div className="task-card-deadline">
-                        <img src={clockIcon} alt="" />
-                        <h3>2024-08-05</h3>
-                    </div>
-                    <p className='task-card-timestamp'>3 hr ago</p>
-                </div>
+                {inProgressTasks.map(task => renderTaskCard(task))}
                 <button class="add-new-task-btn" onClick={handleAddNewTaskClick}>Add new <img src={addIcon} alt="" /></button>
             </div>
             <div className="task-column">
@@ -173,16 +188,7 @@ const HomePage = () => {
                     <h2>Under review</h2>
                     <img src={barFilterIcon} alt="" />
                 </div>
-                <div className="task-card">
-                    <h3 className='task-card-title'>Integrate Cloud Storage</h3>
-                    <p className='task-card-description'>Enable cloud storage for note backup and synchronization.</p>
-                    <button className='task-card-priority urgent'>Urgent</button>
-                    <div className="task-card-deadline">
-                        <img src={clockIcon} alt="" />
-                        <h3>2024-08-20</h3>
-                    </div>
-                    <p className='task-card-timestamp'>2 days ago</p>
-                </div>
+                {underReviewTasks.map(task => renderTaskCard(task))}
                 <button className="add-new-task-btn" onClick={handleAddNewTaskClick}>Add new <img src={addIcon} alt="" /></button>
             </div>
             <div className="task-column">
@@ -190,16 +196,7 @@ const HomePage = () => {
                     <h2>Finished</h2>
                     <img src={barFilterIcon} alt="" />
                 </div>
-                <div className="task-card">
-                    <h3 className='task-card-title'>Test Cross-browser Compatibility</h3>
-                    <p className='task-card-description'>Ensure the app works seamlessly across different web browsers.</p>
-                    <button className='task-card-priority medium'>Medium</button>
-                    <div className="task-card-deadline">
-                        <img src={clockIcon} alt="" />
-                        <h3>2024-07-30</h3>
-                    </div>
-                    <p className='task-card-timestamp'>4 days ago</p>
-                </div>
+                {finishedTasks.map(task => renderTaskCard(task))}
                 <button className="add-new-task-btn" onClick={handleAddNewTaskClick}>Add new <img src={addIcon} alt="" /></button>
             </div>
         </div>

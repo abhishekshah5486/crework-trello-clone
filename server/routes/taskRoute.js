@@ -9,4 +9,5 @@ router.post('/tasks', taskControllers.createTask);
 // Delete a task by id
 // router.delete('/tasks/:id', taskControllers.deleteTask);
 
+router.get('/tasks/:status', taskControllers.retrieveTasksByStatus);
 module.exports = router;
