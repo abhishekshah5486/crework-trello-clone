@@ -3,13 +3,14 @@ import './LoginPage.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye, faEyeSlash } from '@fortawesome/free-regular-svg-icons';
 import { Link } from 'react-router-dom';
-import { Alert } from '@mui/material';
 import { LoginUser } from '../../APICalls/users';
 import UserContext from '../../Context/UserContext';
+import { useNavigate } from 'react-router-dom';
 
 const LoginPage = () => {
+    const navigate = useNavigate();
     const [showPassword, setShowPassword] = useState(false);  
-    const { user, setUser } = useContext(UserContext);  
+    const { setUser } = useContext(UserContext);  
     const [formValues, setFormValues] = useState({
         email: '',
         password: ''
@@ -30,15 +31,17 @@ const LoginPage = () => {
 
         try {
             const response = await LoginUser(userDetails);
-            // Saving the user context
-            setUser({
-                ...user, 
-                email: userDetails.email, 
-                password: userDetails.password
-            })
-            console.log(response);
+
             if (response.success){
-                alert("Logged in syccessfully");
+                alert("Logged in successfully");
+                const user = response.user;
+                setUser({
+                    name: user.name,
+                    email: user.email,
+                });
+                // Set the jwt token received from the server in local storage
+                localStorage.setItem('token', response.token);
+                navigate('/home');
             }else{
                 alert(response.message);
             }

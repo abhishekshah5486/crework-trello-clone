@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useContext} from 'react';
 import dummyProfile from '../../Assets/Images/dummy-profile.png';
 import './HomePage.css';
 import notificationIcon from '../../Assets/Images/notification-icon.svg';
@@ -25,10 +25,14 @@ import addIcon from '../../Assets/Images/add-icon.svg';
 import clockIcon from '../../Assets/Images/clock-icon.svg';
 import { useNavigate } from 'react-router-dom';
 import { retrieveTasksByStatus } from '../../APICalls/tasks';
+import { LogoutUser } from '../../APICalls/users';
 import { formatDistanceToNowStrict } from 'date-fns';
+import { jwtDecode } from 'jwt-decode';
+import UserContext from '../../Context/UserContext';
 
 const HomePage = () => {
   const navigate = useNavigate();
+  const {setUser} = useContext(UserContext);
 
   const [todoTasks, setTodoTasks] = useState([]);
   const [inProgressTasks, setInProgressTasks] = useState([]);
@@ -55,7 +59,7 @@ const HomePage = () => {
   }, []);
 
   const renderTaskCard = (task) => (
-    <div className="task-card" key={task.id}>
+    <div className="task-card" key={task._id}>
       <h3 className='task-card-title'>{task.title}</h3>
       <p className='task-card-description'>{task.description}</p>
       <button className={`task-card-priority ${task.priority.toLowerCase()}`}>{task.priority}</button>
@@ -74,8 +78,28 @@ const HomePage = () => {
     navigate('/home/create-task');
   }
 
-  const handleLogout = () => {
-    
+  const handleLogout = async () => {
+    try {
+        // userId to be passed not passed yet.
+        const token = localStorage.getItem('token');
+        const decodedToken = jwtDecode(token);
+        const userId = decodedToken.userId;
+
+        const loggedOutUser = await LogoutUser(userId);
+        if (loggedOutUser.success)
+        {
+            localStorage.removeItem('token');
+            setUser(null);
+            alert('Logged out successfully.');
+            navigate('/');
+        }
+        else 
+        {
+            alert('Failed to logout, please try again later.');
+        }
+    } catch (err) {
+        alert('Something went wrong, please try again later.');    
+    }
   }
 
   return (
@@ -131,7 +155,7 @@ const HomePage = () => {
       <div className="main-content">
         <header>
             <h1>Good morning, Abhishek!</h1>
-            <div class="help-feedback">
+            <div className="help-feedback">
                 <p>Help & feedback</p>
                 <img src={helpIcon} alt="" />
             </div>
@@ -162,12 +186,12 @@ const HomePage = () => {
         <div className="task-controls">
             <input type="text" className='search-bar' placeholder='Search'/>
             <img src={searchIcon} alt="" className='search-icon'/>
-            <div class="controls">
-                <button class="calendar-view-btn">Calendar view <img src={calendarIcon} alt=""/></button>
-                <button class="automation-btn">Automation <img src={automationIcon} alt="" /></button>
-                <button class="filter-btn">Filter <img src={filterIcon} alt="" /></button>
-                <button class="share-btn">Share <img src={shareIcon} alt="" /></button>
-                <button class="create-new-btn" onClick={handleAddNewTaskClick}>Create new <img src={createIcon} alt="" /></button>
+            <div className="controls">
+                <button className="calendar-view-btn">Calendar view <img src={calendarIcon} alt=""/></button>
+                <button className="automation-btn">Automation <img src={automationIcon} alt="" /></button>
+                <button className="filter-btn">Filter <img src={filterIcon} alt="" /></button>
+                <button className="share-btn">Share <img src={shareIcon} alt="" /></button>
+                <button className="create-new-btn" onClick={handleAddNewTaskClick}>Create new <img src={createIcon} alt="" /></button>
             </div>
         </div>
         <div className="task-columns">
@@ -177,7 +201,7 @@ const HomePage = () => {
                     <img src={barFilterIcon} alt="" />
                 </div>
                 {todoTasks.map(task => renderTaskCard(task))}
-                <button class="add-new-task-btn" onClick={handleAddNewTaskClick}>Add new <img src={addIcon} alt="" /></button>
+                <button className="add-new-task-btn" onClick={handleAddNewTaskClick}>Add new <img src={addIcon} alt="" /></button>
             </div>
             <div className="task-column">
                 <div className="task-status">
@@ -185,7 +209,7 @@ const HomePage = () => {
                     <img src={barFilterIcon} alt="" />
                 </div>
                 {inProgressTasks.map(task => renderTaskCard(task))}
-                <button class="add-new-task-btn" onClick={handleAddNewTaskClick}>Add new <img src={addIcon} alt="" /></button>
+                <button className="add-new-task-btn" onClick={handleAddNewTaskClick}>Add new <img src={addIcon} alt="" /></button>
             </div>
             <div className="task-column">
                 <div className="task-status">

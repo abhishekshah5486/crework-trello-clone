@@ -59,7 +59,7 @@ exports.loginUser = async(req, res) => {
         const token = jwt.sign({userId: userId}, process.env.JWT_SECRET, {expiresIn: '1d'});
 
         // Update the user's login status
-        await userModel.findOneAndUpdate(emailExists.userId, { isLoggedIn: true });
+        await userModel.findOneAndUpdate({userId}, { isLoggedIn: true });
         return res.status(201).send({
             success: true,
             message: "Login successful.",
@@ -161,7 +161,7 @@ exports.logoutUser = async(req, res) => {
     try {
         const userId = req.params.id;
         // Implement logout logic here
-        const loggedOutUser = await userModel.findByIdAndUpdate(userId, {isLoggedIn: false}, {new: true});
+        const loggedOutUser = await userModel.findOneAndUpdate({userId}, {isLoggedIn: false}, {new: true});
 
         return res.status(200).send({
             success: true,

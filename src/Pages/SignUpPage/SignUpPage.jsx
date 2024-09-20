@@ -1,14 +1,15 @@
 import React, { useContext, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './SignUpPage.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye, faEyeSlash } from '@fortawesome/free-regular-svg-icons';
 import { Link } from 'react-router-dom';
 import UserContext from '../../Context/UserContext';
-import Alert from '@mui/material/Alert';
 import { RegisterUser } from '../../APICalls/users';
 
 
 const SignUpPage = () => {
+    const navigate = useNavigate();
     const { user } = useContext(UserContext);
     const [showPassword, setShowPassword] = useState(false);    const [formValues, setFormValues] = useState({
         name: '',
@@ -28,19 +29,18 @@ const SignUpPage = () => {
         e.preventDefault();
         const formData = new FormData(e.target);
         const userDetails = Object.fromEntries(formData);
-        console.log(userDetails);
 
         try {
             const response = await RegisterUser(userDetails);
-            console.log(response);
             if (response.success){
-                <Alert severity='success'>Registration successful.</Alert>
+                alert("You have successfully signed up.");
+                navigate('/login');
             }else{
-                <Alert severity='error'>{response.message}</Alert>
+                alert(response.message);
             }
         } catch (err) {
             console.log(err.message);
-            <Alert severity='error'>Something went wrong. Please try again later.</Alert>
+            alert("Something went wrong, please try again later.");
         }
     }
     return (
