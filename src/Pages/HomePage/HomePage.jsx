@@ -86,7 +86,7 @@ const HomePage = () => {
         }
     }
 
-    const renderTaskCardToDo = (task, index) => (
+    const renderTaskCard = (task, index) => (
         <Draggable draggableId={task.taskId} index={index} key={task.taskId}>
             {(provided) => (
                 <div className="task-card"  
@@ -113,27 +113,6 @@ const HomePage = () => {
                 </div>
             )}
         </Draggable>
-    );
-
-    const renderTaskCard = (task, index) => (
-        <div className="task-card"  key={task.taskId}>
-                    <h3 className='task-card-title'>{task.title}</h3>
-                    <p className='task-card-description'>{task.description}</p>
-                    <button className={`task-card-priority ${task.priority.toLowerCase()}`}>{task.priority}</button>
-                    <div className="task-card-deadline">
-                        <img src={clockIcon} alt="" />
-                        <h3>{task.deadline}</h3>
-                    </div>
-                    <p className='task-card-timestamp'>
-                        {formatDistanceToNowStrict(new Date(task.updatedAt), { addSuffix: true })}
-                    </p>
-                    <div className="update-task" onClick={() => handleUpdateTaskClick(task.taskId)}>
-                        <img src={pencilIcon} alt="" />
-                    </div>
-                    <div className="delete-task" onClick={() => handleDeleteTaskClick(task.taskId)}>
-                        <img src={deleteIcon} alt="" />
-                    </div>
-        </div>
     );
 
     const handleAddNewTaskClick = () => {
@@ -164,8 +143,8 @@ const HomePage = () => {
         }
     }
 
-    const handleDragDrop = (results) => {
-        const {source, destination, type} = results;
+    const handleDragDrop = async (results) => {
+        const {source, destination} = results;
         if (!destination)
         {
             return;
@@ -250,6 +229,32 @@ const HomePage = () => {
             }
         }
         addTaskToDestination(destination.droppableId, destination.index);
+
+        // Determine the new status based on destination droppableID
+        let newStatus;
+        switch (destination.droppableId) {
+            case 'todo-tasks':
+                newStatus = 'to-do';
+                break;
+            case 'in-progress-tasks':
+                newStatus = 'in-progress';
+                break;
+            case 'under-review-tasks':
+                newStatus = 'under-review';
+                break;
+            case 'finished-tasks':
+                newStatus = 'finished';
+                break;
+            default:
+                return;
+        }
+        // Update the new status of the dragged task
+        try {
+            const response = await updateTaskStatusById(taskToMove.taskId, {status: newStatus});
+            console.log('Task status updated successfully:', response);
+        } catch (err) {
+            console.error('Failed to update task status:', err.message);
+        }
     }
     return (
         <div className='user-home-page'> 
@@ -353,7 +358,7 @@ const HomePage = () => {
                         <Droppable droppableId='todo-tasks' type='group'>
                             {(provided) => (
                                 <div {...provided.droppableProps} ref={provided.innerRef}>
-                                {todoTasks.map((task, index) => renderTaskCardToDo(task, index))}
+                                {todoTasks.map((task, index) => renderTaskCard(task, index))}
                                 {provided.placeholder}
                                 </div>
                             )}
@@ -365,7 +370,14 @@ const HomePage = () => {
                             <h2>In progress</h2>
                             <img src={barFilterIcon} alt="" />
                         </div>
-                        {inProgressTasks.map((task, index) => renderTaskCard(task, index))}
+                        <Droppable droppableId='in-progress-tasks' type='group'>
+                            {(provided) => (
+                                <div {...provided.droppableProps} ref={provided.innerRef}>
+                                {inProgressTasks.map((task, index) => renderTaskCard(task, index))}
+                                {provided.placeholder}
+                                </div>
+                            )}
+                        </Droppable>
                         <button className="add-new-task-btn" onClick={handleAddNewTaskClick}>Add new <img src={addIcon} alt="" /></button>
                     </div>
                     <div className="task-column">
@@ -373,7 +385,14 @@ const HomePage = () => {
                             <h2>Under review</h2>
                             <img src={barFilterIcon} alt="" />
                         </div>
-                        {underReviewTasks.map((task, index) => renderTaskCard(task, index))}
+                        <Droppable droppableId='under-review-tasks' type='group'>
+                            {(provided) => (
+                                <div {...provided.droppableProps} ref={provided.innerRef}>
+                                {underReviewTasks.map((task, index) => renderTaskCard(task, index))}
+                                {provided.placeholder}
+                                </div>
+                            )}
+                        </Droppable>
                         <button className="add-new-task-btn" onClick={handleAddNewTaskClick}>Add new <img src={addIcon} alt="" /></button>
                     </div>
                     <div className="task-column">
@@ -381,7 +400,14 @@ const HomePage = () => {
                             <h2>Finished</h2>
                             <img src={barFilterIcon} alt="" />
                         </div>
-                        {finishedTasks.map((task, index) => renderTaskCard(task, index))}
+                        <Droppable droppableId='finished-tasks' type='group'>
+                            {(provided) => (
+                                <div {...provided.droppableProps} ref={provided.innerRef}>
+                                {finishedTasks.map((task, index) => renderTaskCard(task, index))}
+                                {provided.placeholder}
+                                </div>
+                            )}
+                        </Droppable>
                         <button className="add-new-task-btn" onClick={handleAddNewTaskClick}>Add new <img src={addIcon} alt="" /></button>
                     </div>
                 </div>
