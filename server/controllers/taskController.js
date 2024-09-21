@@ -89,7 +89,11 @@ exports.updateTaskById = async (req, res) => {
 exports.deleteTaskById = async (req, res) => {
     try {
         const taskId = req.params.id;
-        const deletedTask = await taskModel.findOneAndDelete(taskId);
+        console.log("in backend - "+taskId);
+
+        const deletedTask = await taskModel.findOneAndDelete({taskId: taskId});
+
+        console.log("deleted :- "+deletedTask);
         if (deletedTask) {
             // Respond with the deleted task
             res.status(200).json({
