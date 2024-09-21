@@ -1,5 +1,32 @@
 const taskModel = require('../models/taskModel');
 
+// Retrieve a task by ID
+exports.retrieveTaskById = async (req, res) => {
+    try {
+        const taskId = req.params.id;
+        const retrievedTask = await taskModel.findOne({taskId: taskId});
+        if (retrievedTask) {
+            // Respond with the retrieved task
+            res.status(200).json({
+                success: true,
+                message: "Task retrieved successfully.",
+                task: retrievedTask
+            });
+        } else {
+            return res.status(404).json({
+                success: false,
+                message: "Task not found."
+            });
+        }
+    } catch (err) {
+        return res.status(500).json({
+            success: false,
+            message: "Server error.",
+            error: err.message
+        });
+    }
+}
+
 // Create a task 
 exports.createTask = async (req, res) => {
     try {

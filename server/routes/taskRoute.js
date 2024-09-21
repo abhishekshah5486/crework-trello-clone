@@ -2,6 +2,8 @@ const express = require('express');
 const router = express.Router();
 const taskControllers = require('../controllers/taskController');
 
+// Retrieve a task by id
+router.get('/tasks/:id', taskControllers.retrieveTaskById);
 // Create a task
 router.post('/tasks', taskControllers.createTask);
 // Update a task by id
