@@ -6,6 +6,7 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import HomePage from './Pages/HomePage';
 import TaskModal from './Components/TaskModal';
 import ProtectedRoute from './Components/ProtectedRoute';
+import UpdateTaskModal from './Components/UpdateTaskModal';
 
 function App() {
 
@@ -35,7 +36,7 @@ function App() {
           exact path='/home/edit-task' 
           element= {
             <ProtectedRoute>
-              <TaskModal />
+              <UpdateTaskModal />
             </ProtectedRoute>
           }
           />

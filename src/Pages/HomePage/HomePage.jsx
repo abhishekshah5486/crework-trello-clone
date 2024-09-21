@@ -23,6 +23,8 @@ import shareIcon from '../../Assets/Images/share-icon.svg';
 import barFilterIcon from '../../Assets/Images/bar-filter-icon.svg';
 import addIcon from '../../Assets/Images/add-icon.svg';
 import clockIcon from '../../Assets/Images/clock-icon.svg';
+import pencilIcon from '../../Assets/Images/pencil.png';
+import deleteIcon from '../../Assets/Images/delete.png';
 import { useNavigate } from 'react-router-dom';
 import { retrieveTasksByStatus } from '../../APICalls/tasks';
 import { LogoutUser } from '../../APICalls/users';
@@ -64,18 +66,28 @@ const HomePage = () => {
         fetchTasks();
     }, []);
 
+    const handleUpdateTaskClick = (taskId) => {
+        navigate('/home/edit-task', {state: {taskId}});
+    }
+
     const renderTaskCard = (task) => (
-        <div className="task-card" key={task._id}>
-        <h3 className='task-card-title'>{task.title}</h3>
-        <p className='task-card-description'>{task.description}</p>
-        <button className={`task-card-priority ${task.priority.toLowerCase()}`}>{task.priority}</button>
-        <div className="task-card-deadline">
-            <img src={clockIcon} alt="" />
-            <h3>{task.deadline}</h3>
-        </div>
-        <p className='task-card-timestamp'>
-        {formatDistanceToNowStrict(new Date(task.updatedAt), { addSuffix: true })}
-        </p>
+        <div className="task-card" key={task.taskId}>
+            <h3 className='task-card-title'>{task.title}</h3>
+            <p className='task-card-description'>{task.description}</p>
+            <button className={`task-card-priority ${task.priority.toLowerCase()}`}>{task.priority}</button>
+            <div className="task-card-deadline">
+                <img src={clockIcon} alt="" />
+                <h3>{task.deadline}</h3>
+            </div>
+            <p className='task-card-timestamp'>
+            {formatDistanceToNowStrict(new Date(task.updatedAt), { addSuffix: true })}
+            </p>
+            <div className="update-task" onClick={() => handleUpdateTaskClick(task.taskId)}>
+                <img src={pencilIcon} alt="" />
+            </div>
+            <div className="delete-task" onClick={() => handleDeleteTaskClick(task.taskId)}>
+                <img src={deleteIcon} alt="" />
+            </div>
         </div>
     );
 

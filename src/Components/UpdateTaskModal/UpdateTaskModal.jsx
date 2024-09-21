@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState, useContext } from 'react';
-import './TaskModal.css';
+import './UpdateTaskModal.css';
 import closeBtn from '../../Assets/Images/close-button.svg';
 import expandIcon from '../../Assets/Images/expand-button.svg';
 import shareIcon from '../../Assets/Images/share-icon.svg';
@@ -12,9 +12,13 @@ import addIcon from '../../Assets/Images/add-icon.svg';
 import { createTask } from '../../APICalls/tasks';
 import DateComponent from '../DateComponent';
 import { Navigate, useNavigate } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import UserContext from '../../Context/UserContext';
+import { getTaskById } from '../../APICalls/tasks';
 
-const TaskModal = () => {
+const UpdateTaskModal = () => {
+    const location = useLocation();
+    const taskId = location.state?.taskId;
     const taskTitleTextAreaRef = useRef(null);
     const taskDescriptionTextAreaRef = useRef(null);
     const overlayRef = useRef(null);
@@ -30,6 +34,27 @@ const TaskModal = () => {
     const navigate = useNavigate();
     const { user } = useContext(UserContext);
     
+    // Retrieve task details by taskId from backend server
+    useEffect(() => {
+        const fetchTaskDetails = async () => {
+            try {
+                if (taskId) {
+                    const taskDetails = await getTaskById(taskId);
+                    setTitle(taskDetails.title);
+                    setDescription(taskDetails.description);
+                    setStatus(taskDetails.status);
+                    setPriority(taskDetails.priority);
+                    setDeadline(taskDetails.deadline);
+                    setDescriptionCharCount(taskDetails.description.length);
+                }
+            } catch (error) {
+                console.error('Failed to fetch task details:', error);
+            }
+        };
+
+        fetchTaskDetails();
+    }, [taskId]);
+
     const isUpdateButtonDisabled = !(title && status && priority && isDateValid && descriptionCharCount <= 300);
     if (!isUpdateButtonDisabled){
         updateTaskBtnRef.current.classList.remove('disabled');
@@ -41,7 +66,7 @@ const TaskModal = () => {
         setPriority(e.target.value);
     }
     const handleSubmit = async () => {
-        if (isCreateButtonDisabled){
+        if (isUpdateButtonDisabled){
             return;
         }
         const userId = user.userId;
@@ -247,4 +272,4 @@ const TaskModal = () => {
     )
 }
 
-export default TaskModal;
+export default UpdateTaskModal;

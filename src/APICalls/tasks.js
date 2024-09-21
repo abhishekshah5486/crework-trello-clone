@@ -1,7 +1,16 @@
 const { axiosInstance } = require('./index');
 
-// Create a new task
+// Retrieve Task by TaskID
+export const retrieveTaskById = async (taskId) => {
+    try {
+        const response = await axiosInstance.get(`/tasks/${taskId}`);
+        return response.data;
+    } catch (err) {
+        console.log(err.message);
+    }
+}
 
+// Create a new task
 export const createTask = async (value) => {
     try {
         const response = await axiosInstance.post('/tasks', value);
