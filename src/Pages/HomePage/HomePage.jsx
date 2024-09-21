@@ -26,7 +26,7 @@ import clockIcon from '../../Assets/Images/clock-icon.svg';
 import pencilIcon from '../../Assets/Images/pencil.png';
 import deleteIcon from '../../Assets/Images/delete.png';
 import { useNavigate } from 'react-router-dom';
-import { retrieveTasksByStatus, deleteTaskById } from '../../APICalls/tasks';
+import { retrieveTasksByStatus, deleteTaskById, updateTaskStatusById } from '../../APICalls/tasks';
 import { LogoutUser } from '../../APICalls/users';
 import { formatDistanceToNowStrict } from 'date-fns';
 import { jwtDecode } from 'jwt-decode';
@@ -86,43 +86,22 @@ const HomePage = () => {
         }
     }
 
-    const renderTaskCard = (task, index) => (
-        // <div className="task-card" key={task.taskId} >
-        //     <h3 className='task-card-title'>{task.title}</h3>
-        //     <p className='task-card-description'>{task.description}</p>
-        //     <button className={`task-card-priority ${task.priority.toLowerCase()}`}>{task.priority}</button>
-        //     <div className="task-card-deadline">
-        //         <img src={clockIcon} alt="" />
-        //         <h3>{task.deadline}</h3>
-        //     </div>
-        //     <p className='task-card-timestamp'>
-        //     {formatDistanceToNowStrict(new Date(task.updatedAt), { addSuffix: true })}
-        //     </p>
-        //     <div className="update-task" onClick={() => handleUpdateTaskClick(task.taskId)}>
-        //         <img src={pencilIcon} alt="" />
-        //     </div>
-        //     <div className="delete-task" onClick={() => handleDeleteTaskClick(task.taskId)}>
-        //         <img src={deleteIcon} alt="" />
-        //     </div>
-        // </div>
-        <Draggable key={task.taskId} draggableId={task.taskId} index={index}>
+    const renderTaskCardToDo = (task, index) => (
+        <Draggable draggableId={task.taskId} index={index} key={task.taskId}>
             {(provided) => (
-                <div
-                className="task-card"
+                <div className="task-card"  
+                {...provided.dragHandleProps} 
+                {...provided.draggableProps} 
                 ref={provided.innerRef}
-                {...provided.draggableProps}
-                {...provided.dragHandleProps}
                 >
-                    <h3 className="task-card-title">{task.title}</h3>
-                    <p className="task-card-description">{task.description}</p>
-                    <button className={`task-card-priority ${task.priority.toLowerCase()}`}>
-                        {task.priority}
-                    </button>
+                    <h3 className='task-card-title'>{task.title}</h3>
+                    <p className='task-card-description'>{task.description}</p>
+                    <button className={`task-card-priority ${task.priority.toLowerCase()}`}>{task.priority}</button>
                     <div className="task-card-deadline">
                         <img src={clockIcon} alt="" />
                         <h3>{task.deadline}</h3>
                     </div>
-                    <p className="task-card-timestamp">
+                    <p className='task-card-timestamp'>
                         {formatDistanceToNowStrict(new Date(task.updatedAt), { addSuffix: true })}
                     </p>
                     <div className="update-task" onClick={() => handleUpdateTaskClick(task.taskId)}>
@@ -134,6 +113,27 @@ const HomePage = () => {
                 </div>
             )}
         </Draggable>
+    );
+
+    const renderTaskCard = (task, index) => (
+        <div className="task-card"  key={task.taskId}>
+                    <h3 className='task-card-title'>{task.title}</h3>
+                    <p className='task-card-description'>{task.description}</p>
+                    <button className={`task-card-priority ${task.priority.toLowerCase()}`}>{task.priority}</button>
+                    <div className="task-card-deadline">
+                        <img src={clockIcon} alt="" />
+                        <h3>{task.deadline}</h3>
+                    </div>
+                    <p className='task-card-timestamp'>
+                        {formatDistanceToNowStrict(new Date(task.updatedAt), { addSuffix: true })}
+                    </p>
+                    <div className="update-task" onClick={() => handleUpdateTaskClick(task.taskId)}>
+                        <img src={pencilIcon} alt="" />
+                    </div>
+                    <div className="delete-task" onClick={() => handleDeleteTaskClick(task.taskId)}>
+                        <img src={deleteIcon} alt="" />
+                    </div>
+        </div>
     );
 
     const handleAddNewTaskClick = () => {
@@ -164,37 +164,93 @@ const HomePage = () => {
         }
     }
 
-    const handleDragEnd = async (result) => {
-        const { destination, source, draggableId } = result;
-        if (!destination) return;
-    
-        if (
-          destination.droppableId === source.droppableId &&
-          destination.index === source.index
-        ) {
-          return;
+    const handleDragDrop = (results) => {
+        const {source, destination, type} = results;
+        if (!destination)
+        {
+            return;
         }
-    
-        const taskStatusMap = {
-          'todo-tasks': 'to-do',
-          'in-progress-tasks': 'in-progress',
-          'under-review-tasks': 'under-review',
-          'finished-tasks': 'finished',
-        };
-    
-        const sourceStatus = taskStatusMap[source.droppableId];
-        const destinationStatus = taskStatusMap[destination.droppableId];
-    
-        if (sourceStatus !== destinationStatus) {
-          try {
-            await updateTaskStatus(draggableId, destinationStatus);
-            window.location.reload();
-          } catch (err) {
-            alert('Failed to update task status.');
-          }
+        if ((source.droppableId === destination.droppableId) && (source.index === destination.index))
+        {
+            return;
         }
-      };
+        // Task being dragged
+        const taskToMove = 
+            source.droppableId === 'todo-tasks' 
+            ? todoTasks[source.index] 
+            : source.droppableId === 'in-progress-tasks'
+            ? inProgressTasks[source.index]
+            : source.droppableId === 'under-review-tasks'
+            ? underReviewTasks[source.index]
+            : finishedTasks[source.index];
 
+        // Remove task from source
+        let newSourceTasks = [];
+        switch(source.droppableId)
+        {
+            case 'todo-tasks':
+                newSourceTasks = [...todoTasks];
+                newSourceTasks.splice(source.index, 1);
+                setTodoTasks(newSourceTasks);
+                break;
+            case 'in-progress-tasks':
+                newSourceTasks = [...inProgressTasks];
+                newSourceTasks.splice(source.index, 1);
+                setInProgressTasks(newSourceTasks);
+                break;
+            case 'under-review-tasks':
+                newSourceTasks = [...underReviewTasks];
+                newSourceTasks.splice(source.index, 1);
+                setUnderReviewTasks(newSourceTasks);
+                break;
+            case 'finished-tasks':
+                newSourceTasks = [...finishedTasks];
+                newSourceTasks.splice(source.index, 1);
+                setFinishedTasks(newSourceTasks);
+                break;
+            default:
+                break;
+        }
+
+        // Add the task to the destination index
+        const addTaskToDestination = (destinationId, destinationIndex) => {
+            let newTasks = [];
+            switch(destinationId)
+            {
+                case 'todo-tasks':
+                    setTodoTasks((prev) => {
+                        newTasks = [...prev];
+                        newTasks.splice(destinationIndex, 0, taskToMove);
+                        return newTasks;
+                    })
+                    break;
+                case 'in-progress-tasks':
+                    setInProgressTasks((prev) => {
+                        newTasks = [...prev];
+                        newTasks.splice(destinationIndex, 0, taskToMove);
+                        return newTasks;
+                    })
+                    break;
+                case 'under-review-tasks':
+                    setUnderReviewTasks((prev) => {
+                        newTasks = [...prev];
+                        newTasks.splice(destinationIndex, 0, taskToMove);
+                        return newTasks;
+                    })
+                    break;
+                case 'finished-tasks':
+                    setFinishedTasks((prev) => {
+                        newTasks = [...prev];
+                        newTasks.splice(destinationIndex, 0, taskToMove);
+                        return newTasks;
+                    })
+                    break;
+                default:
+                    break;
+            }
+        }
+        addTaskToDestination(destination.droppableId, destination.index);
+    }
     return (
         <div className='user-home-page'> 
         <div className="sidebar">
@@ -287,14 +343,21 @@ const HomePage = () => {
                     <button className="create-new-btn" onClick={handleAddNewTaskClick}>Create new <img src={createIcon} alt="" /></button>
                 </div>
             </div>
-            <DragDropContext onDragEnd={handleDragEnd}>
+            <DragDropContext onDragEnd={(results) => handleDragDrop(results)}>
                 <div className="task-columns">
                     <div className="task-column">
                         <div className="task-status">
                             <h2>To do</h2>
                             <img src={barFilterIcon} alt="" />
                         </div>
-                        {todoTasks.map((task, index) => renderTaskCard(task, index))}
+                        <Droppable droppableId='todo-tasks' type='group'>
+                            {(provided) => (
+                                <div {...provided.droppableProps} ref={provided.innerRef}>
+                                {todoTasks.map((task, index) => renderTaskCardToDo(task, index))}
+                                {provided.placeholder}
+                                </div>
+                            )}
+                        </Droppable>
                         <button className="add-new-task-btn" onClick={handleAddNewTaskClick}>Add new <img src={addIcon} alt="" /></button>
                     </div>
                     <div className="task-column">

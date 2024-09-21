@@ -49,3 +49,13 @@ export const retrieveTasksByStatus = async (status) => {
         console.log(err.message);
     }
 }
+
+// Update task status by id
+export const updateTaskStatusById = async (taskId, value) => {
+    try {
+        const response = await axiosInstance.patch(`/tasks/status/${taskId}`, value);
+        return response.data;
+    } catch (err) {
+        console.log(err.message);
+    }
+}
