@@ -132,3 +132,35 @@ exports.retrieveTasksByStatus = async (req, res) => {
         });  
     }
 }
+
+// Update task status by ID
+exports.updateTaskStatusById = async (req, res) => {
+    try {
+        const taskId = req.params.id;
+        const newStatus = req.body.status;
+
+        const updatedTask = await taskModel.findOneAndUpdate({taskId: taskId}, {status: newStatus}, {new: true});
+        if (updatedTask) 
+        {
+            // Respond with the updated task
+            res.status(200).json({
+                success: true,
+                message: "Task status updated successfully.",
+                task: updatedTask
+            });
+        }   
+        else 
+        {
+            return res.status(404).json({
+                success: false,
+                message: "Task not found."
+            });
+        }
+    } catch (err) {
+        return res.status(500).json({
+            success: false,
+            message: "Server error.",
+            error: err.message
+        });
+    }
+}

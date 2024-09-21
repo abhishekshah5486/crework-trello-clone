@@ -13,4 +13,7 @@ router.delete('/tasks/:id', taskControllers.deleteTaskById);
 // Retrieve all tasks by status
 router.get('/tasks/status/:status', taskControllers.retrieveTasksByStatus);
 
+// Update task status by id
+router.patch('/tasks/status/:id', taskControllers.updateTaskStatusById);
+
 module.exports = router;
