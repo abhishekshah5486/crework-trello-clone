@@ -21,9 +21,9 @@ export const createTask = async (value) => {
 }
 
 // Update a task by ID
-export const updateTask = async (value) => {
+export const updateTaskById = async (taskId, value) => {
     try {
-        const response = await axiosInstance.patch('/tasks/:id', value);
+        const response = await axiosInstance.patch(`/tasks/${taskId}`, value);
         return response.data;
     } catch (err) {
         console.log(err.message);
@@ -31,9 +31,10 @@ export const updateTask = async (value) => {
 }
 
 // Delete a task by ID
-export const deleteTask = async () => {
+export const deleteTaskById = async (taskId) => {
     try {
-        const response = await axiosInstance.delete('/tasks/:id');
+        const response = await axiosInstance.delete(`/tasks/${taskId}`);
+        return response.data;
     } catch (err) {
         console.log(err.message);
     }
@@ -42,7 +43,7 @@ export const deleteTask = async () => {
 // Retrieve all tasks by status
 export const retrieveTasksByStatus = async (status) => {
     try {
-        const response = await axiosInstance.get(`/tasks/${status}`);
+        const response = await axiosInstance.get(`/tasks/status/${status}`);
         return response.data;
     } catch (err) {
         console.log(err.message);

@@ -213,7 +213,7 @@
                     background-color: #e8edeb;
                     border: 1px solid #c1c7c6;
                     color: #889396;
-                    cursor: not-allowed;
+                    pointer-events: none;
                 }
             }
         }

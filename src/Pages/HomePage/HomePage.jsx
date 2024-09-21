@@ -26,11 +26,12 @@ import clockIcon from '../../Assets/Images/clock-icon.svg';
 import pencilIcon from '../../Assets/Images/pencil.png';
 import deleteIcon from '../../Assets/Images/delete.png';
 import { useNavigate } from 'react-router-dom';
-import { retrieveTasksByStatus } from '../../APICalls/tasks';
+import { retrieveTasksByStatus, deleteTaskById } from '../../APICalls/tasks';
 import { LogoutUser } from '../../APICalls/users';
 import { formatDistanceToNowStrict } from 'date-fns';
 import { jwtDecode } from 'jwt-decode';
 import UserContext from '../../Context/UserContext';
+import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 
 const HomePage = () => {
     const navigate = useNavigate();
@@ -70,25 +71,69 @@ const HomePage = () => {
         navigate('/home/edit-task', {state: {taskId}});
     }
 
-    const renderTaskCard = (task) => (
-        <div className="task-card" key={task.taskId}>
-            <h3 className='task-card-title'>{task.title}</h3>
-            <p className='task-card-description'>{task.description}</p>
-            <button className={`task-card-priority ${task.priority.toLowerCase()}`}>{task.priority}</button>
-            <div className="task-card-deadline">
-                <img src={clockIcon} alt="" />
-                <h3>{task.deadline}</h3>
-            </div>
-            <p className='task-card-timestamp'>
-            {formatDistanceToNowStrict(new Date(task.updatedAt), { addSuffix: true })}
-            </p>
-            <div className="update-task" onClick={() => handleUpdateTaskClick(task.taskId)}>
-                <img src={pencilIcon} alt="" />
-            </div>
-            <div className="delete-task" onClick={() => handleDeleteTaskClick(task.taskId)}>
-                <img src={deleteIcon} alt="" />
-            </div>
-        </div>
+    const handleDeleteTaskClick = async (taskId) => {
+        try {
+            const deletedTask = await deleteTaskById(taskId);
+            if (deletedTask.success) {
+                alert('Task deleted successfully.');
+                window.location.reload();
+            }
+            else {
+                alert('Failed to delete task, please try again later.');
+            }
+        } catch (err) {
+            alert('Something went wrong, please try again later.');
+        }
+    }
+
+    const renderTaskCard = (task, index) => (
+        // <div className="task-card" key={task.taskId} >
+        //     <h3 className='task-card-title'>{task.title}</h3>
+        //     <p className='task-card-description'>{task.description}</p>
+        //     <button className={`task-card-priority ${task.priority.toLowerCase()}`}>{task.priority}</button>
+        //     <div className="task-card-deadline">
+        //         <img src={clockIcon} alt="" />
+        //         <h3>{task.deadline}</h3>
+        //     </div>
+        //     <p className='task-card-timestamp'>
+        //     {formatDistanceToNowStrict(new Date(task.updatedAt), { addSuffix: true })}
+        //     </p>
+        //     <div className="update-task" onClick={() => handleUpdateTaskClick(task.taskId)}>
+        //         <img src={pencilIcon} alt="" />
+        //     </div>
+        //     <div className="delete-task" onClick={() => handleDeleteTaskClick(task.taskId)}>
+        //         <img src={deleteIcon} alt="" />
+        //     </div>
+        // </div>
+        <Draggable key={task.taskId} draggableId={task.taskId} index={index}>
+            {(provided) => (
+                <div
+                className="task-card"
+                ref={provided.innerRef}
+                {...provided.draggableProps}
+                {...provided.dragHandleProps}
+                >
+                    <h3 className="task-card-title">{task.title}</h3>
+                    <p className="task-card-description">{task.description}</p>
+                    <button className={`task-card-priority ${task.priority.toLowerCase()}`}>
+                        {task.priority}
+                    </button>
+                    <div className="task-card-deadline">
+                        <img src={clockIcon} alt="" />
+                        <h3>{task.deadline}</h3>
+                    </div>
+                    <p className="task-card-timestamp">
+                        {formatDistanceToNowStrict(new Date(task.updatedAt), { addSuffix: true })}
+                    </p>
+                    <div className="update-task" onClick={() => handleUpdateTaskClick(task.taskId)}>
+                        <img src={pencilIcon} alt="" />
+                    </div>
+                    <div className="delete-task" onClick={() => handleDeleteTaskClick(task.taskId)}>
+                        <img src={deleteIcon} alt="" />
+                    </div>
+                </div>
+            )}
+        </Draggable>
     );
 
     const handleAddNewTaskClick = () => {
@@ -118,6 +163,37 @@ const HomePage = () => {
             alert('Something went wrong, please try again later.');    
         }
     }
+
+    const handleDragEnd = async (result) => {
+        const { destination, source, draggableId } = result;
+        if (!destination) return;
+    
+        if (
+          destination.droppableId === source.droppableId &&
+          destination.index === source.index
+        ) {
+          return;
+        }
+    
+        const taskStatusMap = {
+          'todo-tasks': 'to-do',
+          'in-progress-tasks': 'in-progress',
+          'under-review-tasks': 'under-review',
+          'finished-tasks': 'finished',
+        };
+    
+        const sourceStatus = taskStatusMap[source.droppableId];
+        const destinationStatus = taskStatusMap[destination.droppableId];
+    
+        if (sourceStatus !== destinationStatus) {
+          try {
+            await updateTaskStatus(draggableId, destinationStatus);
+            window.location.reload();
+          } catch (err) {
+            alert('Failed to update task status.');
+          }
+        }
+      };
 
     return (
         <div className='user-home-page'> 
@@ -211,40 +287,42 @@ const HomePage = () => {
                     <button className="create-new-btn" onClick={handleAddNewTaskClick}>Create new <img src={createIcon} alt="" /></button>
                 </div>
             </div>
-            <div className="task-columns">
-                <div className="task-column">
-                    <div className="task-status">
-                        <h2>To do</h2>
-                        <img src={barFilterIcon} alt="" />
+            <DragDropContext onDragEnd={handleDragEnd}>
+                <div className="task-columns">
+                    <div className="task-column">
+                        <div className="task-status">
+                            <h2>To do</h2>
+                            <img src={barFilterIcon} alt="" />
+                        </div>
+                        {todoTasks.map((task, index) => renderTaskCard(task, index))}
+                        <button className="add-new-task-btn" onClick={handleAddNewTaskClick}>Add new <img src={addIcon} alt="" /></button>
                     </div>
-                    {todoTasks.map(task => renderTaskCard(task))}
-                    <button className="add-new-task-btn" onClick={handleAddNewTaskClick}>Add new <img src={addIcon} alt="" /></button>
-                </div>
-                <div className="task-column">
-                    <div className="task-status">
-                        <h2>In progress</h2>
-                        <img src={barFilterIcon} alt="" />
+                    <div className="task-column">
+                        <div className="task-status">
+                            <h2>In progress</h2>
+                            <img src={barFilterIcon} alt="" />
+                        </div>
+                        {inProgressTasks.map((task, index) => renderTaskCard(task, index))}
+                        <button className="add-new-task-btn" onClick={handleAddNewTaskClick}>Add new <img src={addIcon} alt="" /></button>
                     </div>
-                    {inProgressTasks.map(task => renderTaskCard(task))}
-                    <button className="add-new-task-btn" onClick={handleAddNewTaskClick}>Add new <img src={addIcon} alt="" /></button>
-                </div>
-                <div className="task-column">
-                    <div className="task-status">
-                        <h2>Under review</h2>
-                        <img src={barFilterIcon} alt="" />
+                    <div className="task-column">
+                        <div className="task-status">
+                            <h2>Under review</h2>
+                            <img src={barFilterIcon} alt="" />
+                        </div>
+                        {underReviewTasks.map((task, index) => renderTaskCard(task, index))}
+                        <button className="add-new-task-btn" onClick={handleAddNewTaskClick}>Add new <img src={addIcon} alt="" /></button>
                     </div>
-                    {underReviewTasks.map(task => renderTaskCard(task))}
-                    <button className="add-new-task-btn" onClick={handleAddNewTaskClick}>Add new <img src={addIcon} alt="" /></button>
-                </div>
-                <div className="task-column">
-                    <div className="task-status">
-                        <h2>Finished</h2>
-                        <img src={barFilterIcon} alt="" />
+                    <div className="task-column">
+                        <div className="task-status">
+                            <h2>Finished</h2>
+                            <img src={barFilterIcon} alt="" />
+                        </div>
+                        {finishedTasks.map((task, index) => renderTaskCard(task, index))}
+                        <button className="add-new-task-btn" onClick={handleAddNewTaskClick}>Add new <img src={addIcon} alt="" /></button>
                     </div>
-                    {finishedTasks.map(task => renderTaskCard(task))}
-                    <button className="add-new-task-btn" onClick={handleAddNewTaskClick}>Add new <img src={addIcon} alt="" /></button>
                 </div>
-            </div>
+            </DragDropContext>
         </div>
         </div>
     )

@@ -8,13 +8,11 @@ import statusIcon from '../../Assets/Images/status-icon.svg';
 import priorityIcon from '../../Assets/Images/priority-icon.svg';
 import dueDateIcon from '../../Assets/Images/calender-icon.svg';
 import descriptionIcom from '../../Assets/Images/description-icon.svg';
-import addIcon from '../../Assets/Images/add-icon.svg';
-import { createTask } from '../../APICalls/tasks';
+import { updateTaskById, retrieveTaskById } from '../../APICalls/tasks';
 import DateComponent from '../DateComponent';
-import { Navigate, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useLocation } from 'react-router-dom';
 import UserContext from '../../Context/UserContext';
-import { getTaskById } from '../../APICalls/tasks';
 
 const UpdateTaskModal = () => {
     const location = useLocation();
@@ -28,7 +26,7 @@ const UpdateTaskModal = () => {
     const [description, setDescription] = useState('');
     const [status, setStatus] = useState('');
     const [priority, setPriority] = useState('');
-    const [deadline, setDeadline] = useState(null);
+    const [deadline, setDeadline] = useState('');
     const [isDateValid, setIsDateValid] = useState(false);
     const [descriptionCharCount, setDescriptionCharCount] = useState(0);
     const navigate = useNavigate();
@@ -36,16 +34,22 @@ const UpdateTaskModal = () => {
     
     // Retrieve task details by taskId from backend server
     useEffect(() => {
+        console.log(taskId);
         const fetchTaskDetails = async () => {
             try {
                 if (taskId) {
-                    const taskDetails = await getTaskById(taskId);
-                    setTitle(taskDetails.title);
-                    setDescription(taskDetails.description);
-                    setStatus(taskDetails.status);
-                    setPriority(taskDetails.priority);
-                    setDeadline(taskDetails.deadline);
-                    setDescriptionCharCount(taskDetails.description.length);
+                    const response = await retrieveTaskById(taskId);
+                    if (response.success)
+                    {
+                        const taskDetails = response.task;
+                        setTitle(taskDetails.title);
+                        setDescription(taskDetails.description);
+                        setStatus(taskDetails.status);
+                        setPriority(taskDetails.priority);
+                        setDeadline(taskDetails.deadline);
+                        setDescriptionCharCount(taskDetails.description.length);
+                        setIsDateValid(true);
+                    }
                 }
             } catch (error) {
                 console.error('Failed to fetch task details:', error);
@@ -56,9 +60,16 @@ const UpdateTaskModal = () => {
     }, [taskId]);
 
     const isUpdateButtonDisabled = !(title && status && priority && isDateValid && descriptionCharCount <= 300);
-    if (!isUpdateButtonDisabled){
-        updateTaskBtnRef.current.classList.remove('disabled');
-    }
+    useEffect(() => {
+        if (updateTaskBtnRef.current) {
+            if (!isUpdateButtonDisabled) {
+                updateTaskBtnRef.current.classList.remove('disabled');
+            } else {
+                updateTaskBtnRef.current.classList.add('disabled');
+            }
+        }
+    }, [title, status, priority, isDateValid, descriptionCharCount]);
+
     const handleStatusChange = (e) => {
         setStatus(e.target.value);
     }
@@ -69,21 +80,19 @@ const UpdateTaskModal = () => {
         if (isUpdateButtonDisabled){
             return;
         }
-        const userId = user.userId;
         const taskModalData = {
            title,
            status,
            priority,
            deadline,
            description,
-           userId,
         }
         console.log(taskModalData);
         try {
-            const response = await createTask(taskModalData);
+            const response = await updateTaskById(taskId, taskModalData);
             console.log(response);
             if (response.success){
-                alert("Task created successfully");
+                alert("Task updated successfully");
                 navigate('/home');
             }
         } catch (err) {
@@ -156,6 +165,7 @@ const UpdateTaskModal = () => {
                     rows={1}
                     onChange={(e) => setTitle(e.target.value)}
                     maxLength={100}
+                    value={title}
                     ></textarea>
                     <div className="task-properties">
                         <div className="label-groups">
@@ -181,6 +191,7 @@ const UpdateTaskModal = () => {
                                 <select className="dropdown-content display-hidden custom-select" 
                                 defaultValue="not-selected"
                                 onChange={handleStatusChange}
+                                value={status}
                                 >   
                                     <option value="not-selected" disabled className="placeholder-option">
                                         Not Selected
@@ -203,6 +214,7 @@ const UpdateTaskModal = () => {
                                 <select className="dropdown-content display-hidden custom-select" 
                                 defaultValue="not-selected"
                                 onChange={handlePriorityChange}
+                                value={priority}
                                 >       
                                         <option value="not-selected" disabled className="placeholder-option">
                                             Not Selected
@@ -237,6 +249,7 @@ const UpdateTaskModal = () => {
                                     setDescriptionCharCount(e.target.value.length);
                                 }}
                                 // maxLength={300}
+                                value={description}
                                 ></textarea>
                                 <div className="character-count">
                                     {descriptionCharCount > 300 && <p className="warning">Limit exceeded!</p>}
@@ -251,7 +264,7 @@ const UpdateTaskModal = () => {
                         </svg>
                         <h2>Add custom property</h2>
                     </div>
-                    <div className="create-task-actions">
+                    <div className="update-task-actions">
                         <button 
                         className='cancel-task' 
                         onClick={handleCancel}

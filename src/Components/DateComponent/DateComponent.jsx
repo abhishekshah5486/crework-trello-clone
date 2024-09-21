@@ -25,6 +25,7 @@ const DateComponent = ({deadline, setDeadline, setIsDateValid}) => {
             className="deadline"
             placeholder="DD-MM-YYYY"
             onChange={handleDateChange}
+            value={deadline}
             />
             <p className="error" ref={errorRef}>Invalid date format.</p>
         </div>

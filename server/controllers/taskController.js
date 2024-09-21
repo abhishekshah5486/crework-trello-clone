@@ -59,8 +59,8 @@ exports.createTask = async (req, res) => {
 // Update a task by ID
 exports.updateTaskById = async (req, res) => {
     try {
-        
-        const updatedTask = await taskModel.findByIdAndUpdate(req.params.id, req.body, {new: true});
+        const taskId = req.params.id;
+        const updatedTask = await taskModel.findOneAndUpdate({taskId: taskId}, req.body, {new: true});
         if (updatedTask)
         {
             // Respond with the updated task
@@ -89,7 +89,7 @@ exports.updateTaskById = async (req, res) => {
 exports.deleteTaskById = async (req, res) => {
     try {
         const taskId = req.params.id;
-        const deletedTask = await taskModel.findByIdAndDelete(taskId);
+        const deletedTask = await taskModel.findOneAndDelete(taskId);
         if (deletedTask) {
             // Respond with the deleted task
             res.status(200).json({

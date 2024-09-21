@@ -348,7 +348,7 @@
                 {
                     height: 25px;
                     width: 35px;
-                    border: 1px solid red;
+                    border: 1px solid #889396;
                     border-radius: 8px;
                     cursor: pointer;
                     display: flex;
@@ -363,7 +363,7 @@
                 {
                     height: 25px;
                     width: 35px;
-                    border: 1px solid red;
+                    border: 1px solid #889396;
                     border-radius: 8px;
                     cursor: pointer;
                     display: flex;
