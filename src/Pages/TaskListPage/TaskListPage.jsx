@@ -1,6 +1,6 @@
 import React, {useState, useEffect, useContext} from 'react';
 import dummyProfile from '../../Assets/Images/dummy-profile.png';
-import './HomePage.css';
+import './TaskListPage.css'
 import notificationIcon from '../../Assets/Images/notification-icon.svg';
 import doubleChevronIcon from '../../Assets/Images/double-chevron-icon.svg';
 import lightThemeIcon from '../../Assets/Images/light-theme-icon.svg';
@@ -11,20 +11,10 @@ import teamsIcon from '../../Assets/Images/teams-icon.svg';
 import analyticsIcon from '../../Assets/Images/analytics-icon.svg';
 import createIcon from '../../Assets/Images/create-icon.svg';
 import downloadIcon from '../../Assets/Images/download-icon.svg';
-import helpIcon from '../../Assets/Images/help-icon.svg';
-import introducingTags from '../../Assets/Images/introducing-tags.svg';
-import shareNotesInstantly from '../../Assets/Images/share-notes-instantly.svg';
-import accessAnywhere from '../../Assets/Images/access-anywhere.svg';
-import searchIcon from '../../Assets/Images/search-icon.svg';
-import calendarIcon from '../../Assets/Images/calender-icon.svg';
-import automationIcon from '../../Assets/Images/automation-icon.svg';
-import filterIcon from '../../Assets/Images/filter-icon.svg';
-import shareIcon from '../../Assets/Images/share-icon.svg';
-import barFilterIcon from '../../Assets/Images/bar-filter-icon.svg';
-import addIcon from '../../Assets/Images/add-icon.svg';
 import clockIcon from '../../Assets/Images/clock-icon.svg';
 import pencilIcon from '../../Assets/Images/pencil.png';
 import deleteIcon from '../../Assets/Images/delete.png';
+import searchIcon from '../../Assets/Images/search-icon.svg';
 import { useNavigate } from 'react-router-dom';
 import { retrieveTasksByStatus, deleteTaskById, updateTaskStatusById } from '../../APICalls/tasks';
 import { LogoutUser } from '../../APICalls/users';
@@ -41,12 +31,6 @@ const HomePage = () => {
     const [inProgressTasks, setInProgressTasks] = useState([]);
     const [underReviewTasks, setUnderReviewTasks] = useState([]);
     const [finishedTasks, setFinishedTasks] = useState([]);
-     
-    useEffect(() => {
-      if (user){
-          return navigate('/home');
-      }
-    }, [user, navigate]);
 
     useEffect(() => {
         const fetchTasks = async () => {
@@ -261,6 +245,10 @@ const HomePage = () => {
             console.error('Failed to update task status:', err.message);
         }
     }
+
+    const handleKanbanViewClick = () => {
+        navigate('/home');
+    }
     return (
         <div className='user-home-page'> 
         <div className="sidebar">
@@ -312,112 +300,24 @@ const HomePage = () => {
             </div>
         </div>
         <div className="main-content">
-            <header>
-                <h1>Let’s make progress, {user.name.split(' ')[0]}!</h1>
-                <div className="help-feedback">
-                    <p>Help & feedback</p>
-                    <img src={helpIcon} alt="" />
-                </div>
+            <header className='kanban-view'>
+                <h2>Tasks Overview</h2>
+                <button className='kanban-view-btn' onClick={handleKanbanViewClick}>Kanban View</button>
             </header>
-            <div className="info-cards">
-                <div className="info-cards-item">
-                    <img src={introducingTags} alt="" />
-                    <div className="info-card-content">
-                        <h2>Introducing tags</h2>
-                        <p>Easily categorize and find your notes by adding tags. Keep your workspace clutter-free and efficient.</p>
-                    </div>
-                </div>
-                <div className="info-cards-item">
-                    <img src={shareNotesInstantly} alt="" />
-                    <div className="info-card-content">
-                        <h2>Share Notes Instantly</h2>
-                        <p>Effortlessly share your notes with others via email or link. Enhance collaboration with quick sharing options.</p>
-                    </div>
-                </div>
-                <div className="info-cards-item">
-                    <img src={accessAnywhere} alt="" />
-                    <div className="info-card-content">
-                        <h2>Access Anywhere</h2>
-                        <p>Sync your notes across all devices. Stay productive whether you're on your phone, tablet, or computer.</p>
+
+            <div className="tasks-search-bar">
+                <img src={searchIcon} alt="" />
+                <input type="text" placeholder='Search tasks by title or description...' />
+                <button className="create-new-btn" onClick={handleAddNewTaskClick}>Create new <img src={createIcon} alt="" /></button>
+            </div>
+            <div className="task-list">
+                <div className="task-card">
+                    <div className="task-content">
+                        <h2 className="task-title">Solve leetcode problems</h2>
+                        <p className="description">This is a brief description of the task that gives more details.</p>
                     </div>
                 </div>
             </div>
-            <div className="task-controls">
-                <input type="text" className='search-bar' placeholder='Search'/>
-                <img src={searchIcon} alt="" className='search-icon'/>
-                <button className='task-list-btn' onClick={handleTaskListClick}>View all tasks</button>
-                <div className="controls">
-                    <button className="calendar-view-btn">Calendar view <img src={calendarIcon} alt=""/></button>
-                    <button className="automation-btn">Automation <img src={automationIcon} alt="" /></button>
-                    <button className="filter-btn">Filter <img src={filterIcon} alt="" /></button>
-                    <button className="share-btn">Share <img src={shareIcon} alt="" /></button>
-                    <button className="create-new-btn" onClick={handleAddNewTaskClick}>Create new <img src={createIcon} alt="" /></button>
-                </div>
-            </div>
-            <DragDropContext onDragEnd={(results) => handleDragDrop(results)}>
-                <div className="task-columns">
-                    <div className="task-column">
-                        <div className="task-status">
-                            <h2>To do</h2>
-                            <img src={barFilterIcon} alt="" />
-                        </div>
-                        <Droppable droppableId='todo-tasks' type='group'>
-                            {(provided) => (
-                                <div {...provided.droppableProps} ref={provided.innerRef}>
-                                {todoTasks.map((task, index) => renderTaskCard(task, index))}
-                                {provided.placeholder}
-                                </div>
-                            )}
-                        </Droppable>
-                        <button className="add-new-task-btn" onClick={handleAddNewTaskClick}>Add new <img src={addIcon} alt="" /></button>
-                    </div>
-                    <div className="task-column">
-                        <div className="task-status">
-                            <h2>In progress</h2>
-                            <img src={barFilterIcon} alt="" />
-                        </div>
-                        <Droppable droppableId='in-progress-tasks' type='group'>
-                            {(provided) => (
-                                <div {...provided.droppableProps} ref={provided.innerRef}>
-                                {inProgressTasks.map((task, index) => renderTaskCard(task, index))}
-                                {provided.placeholder}
-                                </div>
-                            )}
-                        </Droppable>
-                        <button className="add-new-task-btn" onClick={handleAddNewTaskClick}>Add new <img src={addIcon} alt="" /></button>
-                    </div>
-                    <div className="task-column">
-                        <div className="task-status">
-                            <h2>Under review</h2>
-                            <img src={barFilterIcon} alt="" />
-                        </div>
-                        <Droppable droppableId='under-review-tasks' type='group'>
-                            {(provided) => (
-                                <div {...provided.droppableProps} ref={provided.innerRef}>
-                                {underReviewTasks.map((task, index) => renderTaskCard(task, index))}
-                                {provided.placeholder}
-                                </div>
-                            )}
-                        </Droppable>
-                        <button className="add-new-task-btn" onClick={handleAddNewTaskClick}>Add new <img src={addIcon} alt="" /></button>
-                    </div>
-                    <div className="task-column">
-                        <div className="task-status">
-                            <h2>Finished</h2>
-                            <img src={barFilterIcon} alt="" />
-                        </div>
-                        <Droppable droppableId='finished-tasks' type='group'>
-                            {(provided) => (
-                                <div {...provided.droppableProps} ref={provided.innerRef}>
-                                {finishedTasks.map((task, index) => renderTaskCard(task, index))}
-                                {provided.placeholder}
-                                </div>
-                            )}
-                        </Droppable>
-                        <button className="add-new-task-btn" onClick={handleAddNewTaskClick}>Add new <img src={addIcon} alt="" /></button>
-                    </div>
-                </div>
-            </DragDropContext>
         </div>
         </div>
     )

@@ -9,7 +9,11 @@ const Header = () => {
     const [email, setEmail] = useState('');
 
     const handleSubmit = () => {
-        setUser({email});
+        if (email.trim())
+        {
+            setUser({email});
+        }
+        return;
     }
     return (
         <>
