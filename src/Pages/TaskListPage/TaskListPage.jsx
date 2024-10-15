@@ -12,8 +12,6 @@ import analyticsIcon from '../../Assets/Images/analytics-icon.svg';
 import createIcon from '../../Assets/Images/create-icon.svg';
 import downloadIcon from '../../Assets/Images/download-icon.svg';
 import clockIcon from '../../Assets/Images/clock-icon.svg';
-import pencilIcon from '../../Assets/Images/pencil.png';
-import deleteIcon from '../../Assets/Images/delete.png';
 import searchIcon from '../../Assets/Images/search-icon.svg';
 import { useNavigate } from 'react-router-dom';
 import { retrieveTasksByStatus, deleteTaskById, updateTaskStatusById } from '../../APICalls/tasks';
@@ -21,6 +19,8 @@ import { LogoutUser } from '../../APICalls/users';
 import { formatDistanceToNowStrict } from 'date-fns';
 import { jwtDecode } from 'jwt-decode';
 import UserContext from '../../Context/UserContext';
+import pencilIcon from '../../Assets/Images/pencil.png';
+import deleteIcon from '../../Assets/Images/delete.png';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 const HomePage = () => {
     const navigate = useNavigate();
@@ -183,10 +183,55 @@ const HomePage = () => {
                 <button className="create-new-btn" onClick={handleAddNewTaskClick}>Create new <img src={createIcon} alt="" /></button>
             </div>
             <div className="task-list">
-                <div className="task-card">
+                {/* <div className="task-card">
                     <div className="task-content">
                         <h2 className="task-title">Solve leetcode problems</h2>
                         <p className="description">This is a brief description of the task that gives more details.</p>
+                    </div>
+                </div> */}
+                <div className="task-card">
+                    <div className="task-content">
+                        <div className="task-header">
+                            <h2 className="task-title">Solve Leetcode Problems</h2>
+                            <div className="tags">
+                                <span className="tag task-card-priority urgent">Medium</span>
+                                <span className="tag task-card-status">Completed</span>
+                            </div>
+                        </div>
+                        <p className="description">This is a brief description of the task that gives more details.This is a brief description of the task that gives more details.
+                        
+                        </p>
+                    </div>
+                    <div className="task-actions">
+                        <div className="update-task">
+                            <img src={pencilIcon} alt="" />
+                        </div>
+                        <div className="delete-task">
+                            <img src={deleteIcon} alt="" />
+                        </div>
+                    </div>
+                </div>
+                <div className="task-card">
+                    <div className="task-content">
+                        <div className="task-header">
+                            <h2 className="task-title">Solve Leetcode Problems</h2>
+                            <div className="tags">
+                                <span className="tag task-card-priority low">Low</span>
+                                <span className="tag task-card-status">Pending</span>
+                            </div>
+                        </div>
+                        <p className="description">This is a brief description of the task that gives more details.This is a brief description of the task that gives more details.
+                        This is a brief description of the task that gives more details.This is a brief description of the task that gives more details.
+                        This is a brief description of the task that gives more details.This is a brief description of the task that gives more details.
+                        </p>
+                    </div>
+                    <div className="task-actions">
+                        <div className="update-task">
+                            <img src={pencilIcon} alt="" />
+                        </div>
+                        <div className="delete-task">
+                            <img src={deleteIcon} alt="" />
+                        </div>
                     </div>
                 </div>
             </div>

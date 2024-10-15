@@ -80,11 +80,135 @@
     }
     .task-list
     {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        
+        .task-card:hover{
+            border-bottom: 1px solid blue;
+        }
         .task-card
         {
             width: 100%;
-            height: 8vh;
-            border: 1px solid blue;
+            background-color: white;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px;
+
+            .task-content
+            {
+                width: 100%;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                gap: 5px;
+
+                .description
+                {
+                    font-size: 15px;
+                    width: 85%;
+                    overflow: hidden;           /* Hide overflow text */
+                    display: -webkit-box;       /* Create a flexbox layout */
+                    -webkit-box-orient: vertical; /* Set box orientation to vertical */
+                    -webkit-line-clamp: 2;      /* Limit to 2 lines */
+                    text-overflow: ellipsis; 
+                }
+
+                .task-header
+                {
+                    display: flex;
+                    align-items: center;
+                    gap: 10px;
+
+                    .task-title
+                    {
+                        font-size: 17px;
+                        font-weight: 600;
+                        /* color: #093ca0; */
+
+                    }
+                    .tags
+                    {   
+                        display: flex;
+                        align-items: center;
+                        gap: 5px;
+                        .task-card-priority{
+                            outline: none;
+                            border: none;
+                            color: white;
+                            height: 1.688rem;
+                            width: auto;
+                            align-self: flex-start;
+                            font-size: 12px;
+                            font-weight: 500;
+                            border-radius: 25px;
+                            padding: 6px 8px 6px 8px;
+                        }
+                        .urgent{
+                            background-color: #FF6B6B;
+                        }
+                        .medium{
+                            background-color: #FFA235;
+                        }
+                        .low{
+                            background-color: #0ECC5A;
+                        }
+
+                        .task-card-status
+                        {
+                            outline: none;
+                            border: none;
+                            color: #cdc3f7;
+                            color: white;
+                            height: 1.688rem;
+                            width: auto;
+                            align-self: flex-start;
+                            font-size: 12px;
+                            font-weight: 500;
+                            border-radius: 25px;
+                            padding: 6px 8px 6px 8px;
+                            background-color: #261eb5;
+                        }
+                    }
+                }
+            }
+            .task-actions
+            {
+                display: flex;
+                gap: 10px;
+                .update-task
+                {
+                    height: 25px;
+                    width: 35px;
+                    border: 1px solid #889396;
+                    border-radius: 8px;
+                    cursor: pointer;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    img{
+                        height: 15px;
+                        width: 15px;
+                    }
+                }
+                .delete-task
+                {
+                    height: 25px;
+                    width: 35px;
+                    border: 1px solid #889396;
+                    border-radius: 8px;
+                    cursor: pointer;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    img{
+                        height: 15px;
+                        width: 15px;
+                    }
+                }
+            }
         }
     }
 }
