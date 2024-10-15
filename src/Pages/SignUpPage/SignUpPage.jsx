@@ -14,7 +14,7 @@ const SignUpPage = () => {
     const [showPassword, setShowPassword] = useState(false);    
     const [formValues, setFormValues] = useState({
         name: '',
-        email: user.email,
+        email: user?.email || '',
         password: ''
     });
     const isFormComplete = Object.values(formValues).every((value) => value !== '');
