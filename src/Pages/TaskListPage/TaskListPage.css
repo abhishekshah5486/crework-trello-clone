@@ -81,15 +81,84 @@
     .task-list
     {
         display: flex;
-        flex-direction: column;
+        justify-content: space-between;
+        align-items: flex-start;
         gap: 10px;
-        
+
+        .apply-filter-container
+        {
+            background-color: white;
+            border-radius: 4px;
+            padding: 10px;
+            width: 15%;
+            height: 100vh;
+            border: 1px solid blue;
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+
+            .filter-by-priority
+            {   
+                display: flex;
+                flex-direction: column;
+                gap: 20px;
+                .priorities-tags
+                {
+                    display: flex;
+                    flex-wrap: wrap;
+                    gap: 10px;
+                }
+            }
+            .filter-by-status
+            {   
+                display: flex;
+                flex-direction: column;
+                gap: 20px;
+                .status-tags
+                {
+                    display: flex;
+                    flex-wrap: wrap;
+                    gap: 10px;
+                }
+            }
+            h2
+            {
+                font-size: 17px;
+                font-weight: 600;
+            }
+            button
+            {
+                outline: none;
+                border: none;
+                background-color: #efefef;
+                border-radius: 8px;
+                padding: 6px 8px 6px 8px;
+                font-size: 14px;
+                font-weight: 500;
+            }
+            .clickedPriorityFilter
+            {
+                background-color: #261eb5;
+                color: white;
+            }
+            .clickedStatusFilter
+            {
+                background-color: #ffd812;
+                color: black;
+            }
+            button:hover
+            {
+                cursor: pointer;
+            }
+        }
+
         .task-card:hover{
             border-bottom: 1px solid blue;
         }
+
         .task-card
         {
-            width: 100%;
+            width: 85%;
             background-color: white;
             border-radius: 4px;
             display: flex;
@@ -127,7 +196,6 @@
                         font-size: 17px;
                         font-weight: 600;
                         /* color: #093ca0; */
-
                     }
                     .tags
                     {   

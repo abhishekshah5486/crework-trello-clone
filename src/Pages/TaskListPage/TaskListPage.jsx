@@ -31,6 +31,30 @@ const HomePage = () => {
     const [underReviewTasks, setUnderReviewTasks] = useState([]);
     const [finishedTasks, setFinishedTasks] = useState([]);
     const [allTasks, setAllTasks] = useState([]);
+    const [typingTimeout, setTypingTimeout] = useState(null);
+    const [searchQueryFilter, setSearchQueryFilter] = useState('');
+    const [filteredTasks, setFilteredTasks] = useState([]);
+
+    const taskStatus = ['To do', 'Finished', 'Under Review', 'In Progress', ];
+    const statusMapping = {
+        'To do': 'to-do',
+        'Finished': 'finished',
+        'Under Review': 'under-review',
+        'In Progress': 'in-progress',
+    };
+    const taskPriorities = [
+        'Low',
+        'Medium',
+        'Urgent'
+    ];
+    const priorityMapping = {
+        'Low' : 'low',
+        'Medium' : 'medium',
+        'urgent' : 'urgent'
+    }
+
+    let selectedTaskPrioritiesSet = new Set();
+    let selectedTaskStatusesSet = new Set();
     useEffect(() => {
         const fetchTasks = async () => {
         try {
@@ -45,6 +69,7 @@ const HomePage = () => {
             setUnderReviewTasks(underReview.tasks);
             setFinishedTasks(finished.tasks);
             setAllTasks(allTasks.tasks);
+            setFilteredTasks(allTasks.tasks);
         } catch (err) {
             console.error('Failed to fetch tasks:', err.message);
         }
@@ -102,6 +127,43 @@ const HomePage = () => {
     const handleAddNewTaskClick = () => {
         navigate('/home/create-task');
     }
+
+    const handleSearchChange = (e) => {
+        if (typingTimeout)
+        {
+            clearTimeout(typingTimeout);
+        }
+        const searchQueryFilter = e.target.value;
+        setSearchQueryFilter(searchQueryFilter);
+        setTypingTimeout(
+            setTimeout(() => {
+                applyTaskFilter(searchQueryFilter);
+            }, 500)
+        );
+    }
+
+    const applyTaskFilter = (searchQueryFilter) => {
+        let filteredTasks = allTasks;
+        // Search filter logic
+        if (searchQueryFilter)
+        {   
+            filteredTasks = allTasks.filter((task) => {
+                const taskTitle = task.title.toLowerCase();
+                const taskDescription = task.description.toLowerCase();
+    
+                return (
+                    taskTitle.includes(searchQueryFilter.toLowerCase()) ||
+                    taskDescription.includes(searchQueryFilter.toLowerCase())
+                )
+            });
+            setFilteredTasks(filteredTasks);
+        }
+
+        // Filter tasks based on priority
+
+        // Filter tasks based on status
+        setFilteredTasks(filteredTasks);
+    }
     const handleLogout = async () => {
         try {
             // userId to be passed not passed yet.
@@ -126,6 +188,32 @@ const HomePage = () => {
     }
     const handleKanbanViewClick = () => {
         navigate('/home');
+    }
+
+    const handleTaskPriorityFilterTagBtnClick = (e, idx) => {
+        if (!selectedTaskPrioritiesSet.has(idx))
+        {
+            e.target.classList.add('clickedPriorityFilter');
+            selectedTaskPrioritiesSet.add(idx);
+        }
+        else
+        {
+            e.target.classList.remove('clickedPriorityFilter');
+            selectedTaskPrioritiesSet.delete(idx);
+        }
+    }
+
+    const handleTaskStatusFilterTagBtnClick = (e, idx) => {
+        if (!selectedTaskStatusesSet.has(idx))
+        {
+            e.target.classList.add('clickedStatusFilter');
+            selectedTaskStatusesSet.add(idx);
+        }
+        else
+        {
+            e.target.classList.remove('clickedStatusFilter');
+            selectedTaskStatusesSet.delete(idx);
+        }
     }
     return (
         <div className='user-home-page'> 
@@ -184,12 +272,47 @@ const HomePage = () => {
             </header>
             <div className="tasks-search-bar">
                 <img src={searchIcon} alt="" />
-                <input type="text" placeholder='Search tasks by title or description...' />
+                <input type="text" 
+                placeholder='Search tasks by title or description...' 
+                onChange={(e) => handleSearchChange(e)}
+                value={searchQueryFilter}
+                />
                 <button className="create-new-btn" onClick={handleAddNewTaskClick}>Create new <img src={createIcon} alt="" /></button>
             </div>
             <div className="task-list">
-                {
-                    allTasks.map((task, index) => renderTaskList(task, index))
+                <div className="apply-filter-container">
+                    <div className="filter-by-priority">
+                        <h2>Priority</h2>
+                        <div className="priorities-tags">
+                        {
+                            taskPriorities.map((taskPriority, index) => (
+                                <button 
+                                key={index}
+                                onClick={(e) => handleTaskPriorityFilterTagBtnClick(e, index)}
+                                >{taskPriority}</button>
+                            ))
+                        }
+                        </div>
+                    </div>
+                    <div className="filter-by-status">
+                        <h2>Task Status</h2>
+                        <div className="status-tags">
+                        {
+                            taskStatus.map((taskStatus, index) => (
+                                <button 
+                                key={index}
+                                onClick={(e) => handleTaskStatusFilterTagBtnClick(e, index)}
+                                >{taskStatus}</button>
+                            ))
+                        }
+                        </div>
+                    </div>
+                </div>
+                {   filteredTasks.length > 0 ? (
+                       filteredTasks.map((task, index) => renderTaskList(task, index))
+                    ) : (
+                        <p>No tasks found matching your filters.</p>
+                    )
                 }
             </div>
         </div>
