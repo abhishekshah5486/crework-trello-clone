@@ -168,3 +168,23 @@ exports.updateTaskStatusById = async (req, res) => {
         });
     }
 }
+
+// Retrieve all tasks
+exports.retrieveAllTasks = async (req, res) => {
+    try {
+        const tasks = await taskModel.find();
+
+        // Respond with the retrieved tasks
+        res.status(200).json({
+            success: true,
+            message: "Tasks retrieved successfully.",
+            tasks: tasks
+        });
+    } catch (err) {
+        return res.status(500).json({
+            success: false,
+            message: "Server error.",
+            error: err.message
+        });
+    }
+}
