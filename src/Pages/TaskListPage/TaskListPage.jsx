@@ -22,6 +22,7 @@ import UserContext from '../../Context/UserContext';
 import pencilIcon from '../../Assets/Images/pencil.png';
 import deleteIcon from '../../Assets/Images/delete.png';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
+import { retrieveAllTasks } from '../../APICalls/tasks';
 const HomePage = () => {
     const navigate = useNavigate();
     const {user, setUser} = useContext(UserContext);
@@ -29,6 +30,7 @@ const HomePage = () => {
     const [inProgressTasks, setInProgressTasks] = useState([]);
     const [underReviewTasks, setUnderReviewTasks] = useState([]);
     const [finishedTasks, setFinishedTasks] = useState([]);
+    const [allTasks, setAllTasks] = useState([]);
     useEffect(() => {
         const fetchTasks = async () => {
         try {
@@ -36,11 +38,13 @@ const HomePage = () => {
             const inProgress = await retrieveTasksByStatus('in-progress');
             const underReview = await retrieveTasksByStatus('under-review');
             const finished = await retrieveTasksByStatus('finished');
+            const allTasks = await retrieveAllTasks();
             
             setTodoTasks(todo.tasks);
             setInProgressTasks(inProgress.tasks);
             setUnderReviewTasks(underReview.tasks);
             setFinishedTasks(finished.tasks);
+            setAllTasks(allTasks.tasks);
         } catch (err) {
             console.error('Failed to fetch tasks:', err.message);
         }
@@ -52,7 +56,6 @@ const HomePage = () => {
     }
     const handleDeleteTaskClick = async (taskId) => {
         try {
-            // console.log(taskId);
             const deletedTask = await deleteTaskById(taskId);
             console.log(deletedTask);
             if (deletedTask.success) {
@@ -66,34 +69,36 @@ const HomePage = () => {
             alert('Something went wrong, please try again later.');
         }
     }
-    const renderTaskCard = (task, index) => (
-        <Draggable draggableId={task.taskId} index={index} key={task.taskId}>
-            {(provided) => (
-                <div className="task-card"  
-                {...provided.dragHandleProps} 
-                {...provided.draggableProps} 
-                ref={provided.innerRef}
-                >
-                    <h3 className='task-card-title'>{task.title}</h3>
-                    <p className='task-card-description'>{task.description}</p>
-                    <button className={`task-card-priority ${task.priority.toLowerCase()}`}>{task.priority}</button>
-                    <div className="task-card-deadline">
-                        <img src={clockIcon} alt="" />
-                        <h3>{task.deadline}</h3>
+    const renderTaskList = (task, index) => {
+        return (
+            <div className="task-card" key={index}>
+                    <div className="task-content">
+                        <div className="task-header">
+                            <h2 className="task-title">{task.title}</h2>
+                            <div className="tags">
+                                <span className="tag task-card-priority urgent">{task.priority}</span>
+                                <span className="tag task-card-status">{task.status}</span>
+                            </div>
+                        </div>
+                        <p className="description">
+                            {task.description}
+                        </p>
                     </div>
-                    <p className='task-card-timestamp'>
-                        {formatDistanceToNowStrict(new Date(task.updatedAt), { addSuffix: true })}
-                    </p>
-                    <div className="update-task" onClick={() => handleUpdateTaskClick(task.taskId)}>
-                        <img src={pencilIcon} alt="" />
+                    <div className="task-actions">
+                        <div className="update-task">
+                            <img src={pencilIcon} alt="" 
+                            onClick={() => handleUpdateTaskClick(task.taskId)}
+                            />
+                        </div>
+                        <div className="delete-task">
+                            <img src={deleteIcon} alt="" 
+                            onClick={() => handleDeleteTaskClick(task.taskId)}
+                            />
+                        </div>
                     </div>
-                    <div className="delete-task" onClick={() => handleDeleteTaskClick(task.taskId)}>
-                        <img src={deleteIcon} alt="" />
-                    </div>
-                </div>
-            )}
-        </Draggable>
-    );
+            </div>
+        )
+    }
     const handleAddNewTaskClick = () => {
         navigate('/home/create-task');
     }
@@ -183,57 +188,9 @@ const HomePage = () => {
                 <button className="create-new-btn" onClick={handleAddNewTaskClick}>Create new <img src={createIcon} alt="" /></button>
             </div>
             <div className="task-list">
-                {/* <div className="task-card">
-                    <div className="task-content">
-                        <h2 className="task-title">Solve leetcode problems</h2>
-                        <p className="description">This is a brief description of the task that gives more details.</p>
-                    </div>
-                </div> */}
-                <div className="task-card">
-                    <div className="task-content">
-                        <div className="task-header">
-                            <h2 className="task-title">Solve Leetcode Problems</h2>
-                            <div className="tags">
-                                <span className="tag task-card-priority urgent">Medium</span>
-                                <span className="tag task-card-status">Completed</span>
-                            </div>
-                        </div>
-                        <p className="description">This is a brief description of the task that gives more details.This is a brief description of the task that gives more details.
-                        
-                        </p>
-                    </div>
-                    <div className="task-actions">
-                        <div className="update-task">
-                            <img src={pencilIcon} alt="" />
-                        </div>
-                        <div className="delete-task">
-                            <img src={deleteIcon} alt="" />
-                        </div>
-                    </div>
-                </div>
-                <div className="task-card">
-                    <div className="task-content">
-                        <div className="task-header">
-                            <h2 className="task-title">Solve Leetcode Problems</h2>
-                            <div className="tags">
-                                <span className="tag task-card-priority low">Low</span>
-                                <span className="tag task-card-status">Pending</span>
-                            </div>
-                        </div>
-                        <p className="description">This is a brief description of the task that gives more details.This is a brief description of the task that gives more details.
-                        This is a brief description of the task that gives more details.This is a brief description of the task that gives more details.
-                        This is a brief description of the task that gives more details.This is a brief description of the task that gives more details.
-                        </p>
-                    </div>
-                    <div className="task-actions">
-                        <div className="update-task">
-                            <img src={pencilIcon} alt="" />
-                        </div>
-                        <div className="delete-task">
-                            <img src={deleteIcon} alt="" />
-                        </div>
-                    </div>
-                </div>
+                {
+                    allTasks.map((task, index) => renderTaskList(task, index))
+                }
             </div>
         </div>
         </div>

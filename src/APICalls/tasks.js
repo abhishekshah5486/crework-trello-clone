@@ -59,3 +59,13 @@ export const updateTaskStatusById = async (taskId, value) => {
         console.log(err.message);
     }
 }
+
+// Retrieve all tasks
+export const retrieveAllTasks = async () => {
+    try {
+        const response = await axiosInstance.get('/tasks');
+        return response.data;
+    } catch (err) {
+        console.log(err.message);
+    }
+}
