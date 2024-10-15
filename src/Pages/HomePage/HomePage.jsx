@@ -71,6 +71,10 @@ const HomePage = () => {
         navigate('/home/edit-task', {state: {taskId}});
     }
 
+    const handleTaskListClick = () => {
+        navigate('/all-tasks');
+    }
+
     const handleDeleteTaskClick = async (taskId) => {
         try {
             const deletedTask = await deleteTaskById(taskId);
@@ -340,6 +344,7 @@ const HomePage = () => {
             <div className="task-controls">
                 <input type="text" className='search-bar' placeholder='Search'/>
                 <img src={searchIcon} alt="" className='search-icon'/>
+                <button className='task-list-btn' onClick={handleTaskListClick}>View all tasks</button>
                 <div className="controls">
                     <button className="calendar-view-btn">Calendar view <img src={calendarIcon} alt=""/></button>
                     <button className="automation-btn">Automation <img src={automationIcon} alt="" /></button>

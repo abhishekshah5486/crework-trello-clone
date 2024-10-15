@@ -7,6 +7,7 @@ import HomePage from './Pages/HomePage';
 import TaskModal from './Components/TaskModal';
 import ProtectedRoute from './Components/ProtectedRoute';
 import UpdateTaskModal from './Components/UpdateTaskModal';
+import TaskListPage from './Pages/TaskListPage';
 
 function App() {
 
@@ -37,6 +38,14 @@ function App() {
           element= {
             <ProtectedRoute>
               <UpdateTaskModal />
+            </ProtectedRoute>
+          }
+          />
+          <Route 
+          exact path='/all-tasks' 
+          element= {
+            <ProtectedRoute>
+              <TaskListPage />
             </ProtectedRoute>
           }
           />

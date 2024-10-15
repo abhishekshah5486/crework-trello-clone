@@ -97,9 +97,6 @@ const HomePage = () => {
     const handleAddNewTaskClick = () => {
         navigate('/home/create-task');
     }
-    const handleTaskListClick = () => {
-        navigate('/all-tasks');
-    }
     const handleLogout = async () => {
         try {
             // userId to be passed not passed yet.
@@ -120,116 +117,6 @@ const HomePage = () => {
             }
         } catch (err) {
             alert('Something went wrong, please try again later.');    
-        }
-    }
-    const handleDragDrop = async (results) => {
-        const {source, destination} = results;
-        if (!destination)
-        {
-            return;
-        }
-        if ((source.droppableId === destination.droppableId) && (source.index === destination.index))
-        {
-            return;
-        }
-        // Task being dragged
-        const taskToMove = 
-            source.droppableId === 'todo-tasks' 
-            ? todoTasks[source.index] 
-            : source.droppableId === 'in-progress-tasks'
-            ? inProgressTasks[source.index]
-            : source.droppableId === 'under-review-tasks'
-            ? underReviewTasks[source.index]
-            : finishedTasks[source.index];
-        // Remove task from source
-        let newSourceTasks = [];
-        switch(source.droppableId)
-        {
-            case 'todo-tasks':
-                newSourceTasks = [...todoTasks];
-                newSourceTasks.splice(source.index, 1);
-                setTodoTasks(newSourceTasks);
-                break;
-            case 'in-progress-tasks':
-                newSourceTasks = [...inProgressTasks];
-                newSourceTasks.splice(source.index, 1);
-                setInProgressTasks(newSourceTasks);
-                break;
-            case 'under-review-tasks':
-                newSourceTasks = [...underReviewTasks];
-                newSourceTasks.splice(source.index, 1);
-                setUnderReviewTasks(newSourceTasks);
-                break;
-            case 'finished-tasks':
-                newSourceTasks = [...finishedTasks];
-                newSourceTasks.splice(source.index, 1);
-                setFinishedTasks(newSourceTasks);
-                break;
-            default:
-                break;
-        }
-        // Add the task to the destination index
-        const addTaskToDestination = (destinationId, destinationIndex) => {
-            let newTasks = [];
-            switch(destinationId)
-            {
-                case 'todo-tasks':
-                    setTodoTasks((prev) => {
-                        newTasks = [...prev];
-                        newTasks.splice(destinationIndex, 0, taskToMove);
-                        return newTasks;
-                    })
-                    break;
-                case 'in-progress-tasks':
-                    setInProgressTasks((prev) => {
-                        newTasks = [...prev];
-                        newTasks.splice(destinationIndex, 0, taskToMove);
-                        return newTasks;
-                    })
-                    break;
-                case 'under-review-tasks':
-                    setUnderReviewTasks((prev) => {
-                        newTasks = [...prev];
-                        newTasks.splice(destinationIndex, 0, taskToMove);
-                        return newTasks;
-                    })
-                    break;
-                case 'finished-tasks':
-                    setFinishedTasks((prev) => {
-                        newTasks = [...prev];
-                        newTasks.splice(destinationIndex, 0, taskToMove);
-                        return newTasks;
-                    })
-                    break;
-                default:
-                    break;
-            }
-        }
-        addTaskToDestination(destination.droppableId, destination.index);
-        // Determine the new status based on destination droppableID
-        let newStatus;
-        switch (destination.droppableId) {
-            case 'todo-tasks':
-                newStatus = 'to-do';
-                break;
-            case 'in-progress-tasks':
-                newStatus = 'in-progress';
-                break;
-            case 'under-review-tasks':
-                newStatus = 'under-review';
-                break;
-            case 'finished-tasks':
-                newStatus = 'finished';
-                break;
-            default:
-                return;
-        }
-        // Update the new status of the dragged task
-        try {
-            const response = await updateTaskStatusById(taskToMove.taskId, {status: newStatus});
-            console.log('Task status updated successfully:', response);
-        } catch (err) {
-            console.error('Failed to update task status:', err.message);
         }
     }
     const handleKanbanViewClick = () => {
