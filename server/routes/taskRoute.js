@@ -16,4 +16,7 @@ router.get('/tasks/status/:status', taskControllers.retrieveTasksByStatus);
 // Update task status by id
 router.patch('/tasks/status/:id', taskControllers.updateTaskStatusById);
 
+// Retrieve all tasks
+router.get('/tasks', taskControllers.retrieveAllTasks);
+
 module.exports = router;
