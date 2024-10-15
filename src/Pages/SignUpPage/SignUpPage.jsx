@@ -11,10 +11,9 @@ import { RegisterUser } from '../../APICalls/users';
 const SignUpPage = () => {
     const navigate = useNavigate();
     const { user } = useContext(UserContext);
-    const [showPassword, setShowPassword] = useState(false);    
-    const [formValues, setFormValues] = useState({
+    const [showPassword, setShowPassword] = useState(false);    const [formValues, setFormValues] = useState({
         name: '',
-        email: user?.email || '',
+        email: user.email,
         password: ''
     });
     const isFormComplete = Object.values(formValues).every((value) => value !== '');

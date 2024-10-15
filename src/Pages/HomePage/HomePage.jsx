@@ -73,9 +73,7 @@ const HomePage = () => {
 
     const handleDeleteTaskClick = async (taskId) => {
         try {
-            // console.log(taskId);
             const deletedTask = await deleteTaskById(taskId);
-            console.log(deletedTask);
             if (deletedTask.success) {
                 alert('Task deleted successfully.');
                 window.location.reload();
@@ -121,9 +119,6 @@ const HomePage = () => {
         navigate('/home/create-task');
     }
 
-    const handleTaskListClick = () => {
-        navigate('/all-tasks');
-    }
     const handleLogout = async () => {
         try {
             // userId to be passed not passed yet.
@@ -345,7 +340,6 @@ const HomePage = () => {
             <div className="task-controls">
                 <input type="text" className='search-bar' placeholder='Search'/>
                 <img src={searchIcon} alt="" className='search-icon'/>
-                <button className='task-list-btn' onClick={handleTaskListClick}>View all tasks</button>
                 <div className="controls">
                     <button className="calendar-view-btn">Calendar view <img src={calendarIcon} alt=""/></button>
                     <button className="automation-btn">Automation <img src={automationIcon} alt="" /></button>

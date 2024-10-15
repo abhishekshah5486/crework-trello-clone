@@ -33,7 +33,6 @@ export const updateTaskById = async (taskId, value) => {
 // Delete a task by ID
 export const deleteTaskById = async (taskId) => {
     try {
-        console.log("calling backend : - "+taskId);
         const response = await axiosInstance.delete(`/tasks/${taskId}`);
         return response.data;
     } catch (err) {

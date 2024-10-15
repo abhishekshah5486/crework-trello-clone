@@ -224,27 +224,6 @@
             height: 24px;
             width: 24px;
         }
-        .task-list-btn
-        {
-            border: none;
-            outline: none;
-            border: 2px solid #0056d2;
-            background-color: white;
-            color: #0056d2;
-            cursor: pointer;
-            padding: 8px;
-            font-size: 16px;
-            border-radius: 4px;
-            width: 10vw;
-            height: 2.5rem;
-            text-align: center;
-            transition: all 0.2s;
-            margin-left: 100px;
-        }
-        .task-list-btn:hover{
-            background-color: #0056d2;
-            color: white;
-        }
         .controls{
             display: flex;
             gap: 16px;
