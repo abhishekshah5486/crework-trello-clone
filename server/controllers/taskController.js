@@ -188,3 +188,26 @@ exports.retrieveAllTasks = async (req, res) => {
         });
     }
 }
+
+// Retrieve all tasks by userId
+
+exports.retrieveAllTasksByUserId = async (req, res) => 
+{
+    try {
+        const userId = req.params.userId;
+        const retrievedTasksByUserId = await taskModel.find({userId});
+
+        // Response with the retrieved tasks
+        res.status(200).json({
+            success: true,
+            message: "Tasks retrieved successfully.",
+            tasks: retrievedTasksByUserId
+        })
+    } catch (err) {
+        return res.status(500).json({
+            success: false,
+            message: "Server error.",
+            error: err.message
+        });
+    }
+}
