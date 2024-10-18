@@ -13,6 +13,9 @@ router.delete('/tasks/:id', taskControllers.deleteTaskById);
 // Retrieve all tasks by status
 router.get('/tasks/status/:status', taskControllers.retrieveTasksByStatus);
 
+// Retrieve all tasks by userId and task status
+router.get('/tasks/user/:userId/status/:status', taskControllers.retrieveAllTasksByUserIdAndStatus);
+
 // Update task status by id
 router.patch('/tasks/status/:id', taskControllers.updateTaskStatusById);
 
