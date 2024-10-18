@@ -52,9 +52,22 @@ const HomePage = () => {
         'Medium' : 'medium',
         'urgent' : 'urgent'
     }
-
+    const taskDeadlines = [
+        'Overdue',
+        'Today',
+        'This Week',
+        'This Month',
+        'Upcoming'
+    ]
+    const taskSorting = [
+        'Last Updated',
+        'Sort by Title (A-Z)',
+        'Sort by Title (Z-A)'
+    ]
     let selectedTaskPrioritiesSet = new Set();
     let selectedTaskStatusesSet = new Set();
+    let selectedTaskDeadlineSet = new Set();
+    let selectedSortFilterSet = new Set();
     useEffect(() => {
         const fetchTasks = async () => {
         try {
@@ -95,14 +108,79 @@ const HomePage = () => {
         }
     }
     const renderTaskList = (task, index) => {
+        const deadline = parseDate(task.deadline);
+        const lastUpdated = new Date(task.updatedAt);
+        const currTime = new Date();
+        const timeDiff = (deadline - currTime);
+
+        const statusIndicators = new Map();
+        function parseDate(dateString) {
+            const [day, month, year] = dateString.split('-').map(Number);
+            return new Date(year, month - 1, day);
+        }
+        const generateDeadlineTags = () =>  
+        {
+            const daysUntilDue = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
+            const isToday = deadline.toDateString() === currTime.toDateString();
+
+            if (daysUntilDue < 0)
+            {
+                statusIndicators.set('overdue', 'Overdue');
+            }
+            else{
+                if (isToday)
+                {
+                    statusIndicators.set('due-today', 'Due Today');
+                }
+                else if (daysUntilDue <= 3)
+                {
+                    statusIndicators.set('due-soon', 'Due Soon');
+                    if (daysUntilDue == 1)
+                    {
+                        statusIndicators.set('days-left', `${daysUntilDue} day left`);
+                    }
+                    else statusIndicators.set('days-left', `${daysUntilDue} days left`);
+                }
+                else if (daysUntilDue <= 7)
+                {
+                    statusIndicators.set('due-this-week', 'Due This Week');
+                }
+                else if (deadline.getMonth() === currTime.getMonth())
+                {
+                    statusIndicators.set('due-this-month', 'Due This Month');
+                }
+                else statusIndicators.set('upcoming', 'Upcoming');
+            }
+        }   
+        const generateUpdatedTags = () => 
+        {   
+            const updatedTimeDiff = (currTime - lastUpdated);
+            const daysAfterLastUpdated = Math.ceil(updatedTimeDiff / (1000 * 60 * 60 * 24));
+            const isToday = deadline.toDateString() === currTime.toDateString();
+
+            if (daysAfterLastUpdated <= 3)
+            {
+                statusIndicators.set('updated-recently', 'Updated Recently');
+            }
+        }
+        generateDeadlineTags();
+        generateUpdatedTags();
         return (
             <div className="task-card" key={index}>
                     <div className="task-content">
                         <div className="task-header">
                             <h2 className="task-title">{task.title}</h2>
                             <div className="tags">
-                                <span className="tag task-card-priority urgent">{task.priority}</span>
-                                <span className="tag task-card-status">{task.status}</span>
+                                <span className={`tag task-card-priority ${task.priority}`}>{task.priority}</span>
+                                <span className={`tag task-card-status ${task.status}`}>{task.status}</span>
+                                {
+                                    Array.from(statusIndicators.keys()).map((key) => 
+                                    {
+                                        return (
+                                            <span  key={key} className={`tag ${key}`}>{statusIndicators.get(key)}</span>
+                                        )
+                                    })
+                                }
                             </div>
                         </div>
                         <p className="description">
@@ -215,8 +293,32 @@ const HomePage = () => {
             selectedTaskStatusesSet.delete(idx);
         }
     }
+
+    const handleTaskDueDateFilterTagBtnClick = (e, idx) => {
+        if (!selectedTaskDeadlineSet.has(idx))
+        {
+            e.target.classList.add('clickedDueDateFilter');
+            selectedTaskDeadlineSet.add(idx);
+        }
+        else{
+            e.target.classList.remove('clickedDueDateFilter');
+            selectedTaskDeadlineSet.delete(idx);
+        }
+    }
+
+    const handleTaskSortFilterTagBtnClick = (e, idx) => {
+        if (!selectedSortFilterSet.has(idx))
+        {
+            e.target.classList.add('clickedSortFilter');
+            selectedSortFilterSet.add(idx);
+        }
+        else{
+            e.target.classList.remove('clickedSortFilter');
+            selectedSortFilterSet.delete(idx);
+        }
+    }
     return (
-        <div className='user-home-page'> 
+    <div className='user-home-page'> 
         <div className="sidebar">
             <div className="profile-section">
                 <div className="profile">
@@ -307,16 +409,44 @@ const HomePage = () => {
                         }
                         </div>
                     </div>
+                    <div className="filter-by-due-date">
+                        <h2>Deadline</h2>
+                        <div className="due-date-tags">
+                        {
+                            taskDeadlines.map((taskDueDate, index) => (
+                                <button 
+                                key={index}
+                                onClick={(e) => handleTaskDueDateFilterTagBtnClick(e, index)}
+                                >{taskDueDate}</button>
+                            ))
+                        }
+                        </div>
+                    </div>
+                    <div className="task-sorting">
+                        <h2>Sort Tasks</h2>
+                        <div className="sort-tags">
+                        {
+                            taskSorting.map((taskSortFilter, index) => (
+                                <button 
+                                key={index}
+                                onClick={(e) => handleTaskSortFilterTagBtnClick(e, index)}
+                                >{taskSortFilter}</button>
+                            ))
+                        }
+                        </div>
+                    </div>
                 </div>
-                {   filteredTasks.length > 0 ? (
-                       filteredTasks.map((task, index) => renderTaskList(task, index))
-                    ) : (
-                        <p>No tasks found matching your filters.</p>
-                    )
-                }
+                <div className="all-task-cards">
+                    {   filteredTasks.length > 0 ? (
+                        filteredTasks.map((task, index) => renderTaskList(task, index))
+                        ) : (
+                            <p>No tasks found matching your filters.</p>
+                        )
+                    }
+                </div>
             </div>
         </div>
-        </div>
+    </div>
     )
 }
 export default HomePage;

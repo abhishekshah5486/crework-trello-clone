@@ -84,6 +84,7 @@
         justify-content: space-between;
         align-items: flex-start;
         gap: 10px;
+        overflow-y: scroll;
 
         .apply-filter-container
         {
@@ -91,7 +92,6 @@
             border-radius: 4px;
             padding: 10px;
             width: 15%;
-            height: 100vh;
             border: 1px solid blue;
             display: flex;
             flex-direction: column;
@@ -115,6 +115,30 @@
                 flex-direction: column;
                 gap: 20px;
                 .status-tags
+                {
+                    display: flex;
+                    flex-wrap: wrap;
+                    gap: 10px;
+                }
+            }
+            .filter-by-due-date
+            {   
+                display: flex;
+                flex-direction: column;
+                gap: 20px;
+                .due-date-tags
+                {
+                    display: flex;
+                    flex-wrap: wrap;
+                    gap: 10px;
+                }
+            }
+            .task-sorting
+            {   
+                display: flex;
+                flex-direction: column;
+                gap: 20px;
+                .sort-tags
                 {
                     display: flex;
                     flex-wrap: wrap;
@@ -146,137 +170,232 @@
                 background-color: #ffd812;
                 color: black;
             }
+            .clickedDueDateFilter
+            {
+                background-color: #e50815;
+                color: white;
+            }
+            .clickedSortFilter
+            {
+                background-color: #1cd760;
+                color: black;
+            }
             button:hover
             {
                 cursor: pointer;
             }
         }
 
-        .task-card:hover{
-            border-bottom: 1px solid blue;
-        }
-
-        .task-card
+        .all-task-cards
         {
             width: 85%;
-            background-color: white;
-            border-radius: 4px;
+            /* border: 1px solid red; */
             display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 10px;
+            flex-direction: column;
+            gap: 10px;
 
-            .task-content
+            .task-card:hover{
+                border-bottom: 1px solid blue;
+            }
+    
+            .task-card
             {
                 width: 100%;
+                background-color: white;
+                border-radius: 4px;
                 display: flex;
-                flex-direction: column;
-                justify-content: center;
-                gap: 5px;
-
-                .description
+                align-items: center;
+                justify-content: space-between;
+                padding: 10px;
+                
+                .task-content
                 {
-                    font-size: 15px;
-                    width: 85%;
-                    overflow: hidden;           /* Hide overflow text */
-                    display: -webkit-box;       /* Create a flexbox layout */
-                    -webkit-box-orient: vertical; /* Set box orientation to vertical */
-                    -webkit-line-clamp: 2;      /* Limit to 2 lines */
-                    text-overflow: ellipsis; 
-                }
-
-                .task-header
-                {
+                    width: 100%;
                     display: flex;
-                    align-items: center;
-                    gap: 10px;
-
-                    .task-title
+                    flex-direction: column;
+                    justify-content: center;
+                    gap: 5px;
+    
+                    .description
                     {
-                        font-size: 17px;
-                        font-weight: 600;
-                        /* color: #093ca0; */
+                        font-size: 15px;
+                        width: 85%;
+                        overflow: hidden;           /* Hide overflow text */
+                        display: -webkit-box;       /* Create a flexbox layout */
+                        -webkit-box-orient: vertical; /* Set box orientation to vertical */
+                        -webkit-line-clamp: 2;      /* Limit to 2 lines */
+                        text-overflow: ellipsis; 
                     }
-                    .tags
-                    {   
+    
+                    .task-header
+                    {
                         display: flex;
                         align-items: center;
-                        gap: 5px;
-                        .task-card-priority{
-                            outline: none;
-                            border: none;
-                            color: white;
-                            height: 1.688rem;
-                            width: auto;
-                            align-self: flex-start;
-                            font-size: 12px;
-                            font-weight: 500;
-                            border-radius: 25px;
-                            padding: 6px 8px 6px 8px;
-                        }
-                        .urgent{
-                            background-color: #FF6B6B;
-                        }
-                        .medium{
-                            background-color: #FFA235;
-                        }
-                        .low{
-                            background-color: #0ECC5A;
-                        }
-
-                        .task-card-status
+                        gap: 10px;
+    
+                        .task-title
                         {
-                            outline: none;
-                            border: none;
-                            color: #cdc3f7;
-                            color: white;
-                            height: 1.688rem;
-                            width: auto;
-                            align-self: flex-start;
-                            font-size: 12px;
-                            font-weight: 500;
-                            border-radius: 25px;
-                            padding: 6px 8px 6px 8px;
-                            background-color: #261eb5;
+                            font-size: 17px;
+                            font-weight: 600;
+                            /* color: #093ca0; */
+                        }
+                        .tags
+                        {   
+                            display: flex;
+                            align-items: center;
+                            gap: 5px;
+                            .tag{
+                                outline: none;
+                                border: none;
+                                color: white;
+                                height: 1.688rem;
+                                width: auto;
+                                align-self: flex-start;
+                                font-size: 12px;
+                                font-weight: 500;
+                                border-radius: 25px;
+                                padding: 6px 8px 6px 8px;
+                            }
+                            .task-card-priority{
+                                outline: none;
+                                border: none;
+                                color: white;
+                                height: 1.688rem;
+                                width: auto;
+                                align-self: flex-start;
+                                font-size: 12px;
+                                font-weight: 500;
+                                border-radius: 25px;
+                                padding: 6px 8px 6px 8px;
+                            }
+                            .urgent{
+                                /* background-color: #FF6B6B; */
+                                background-color: #d20614;
+                            }
+                            .medium{
+                                /* background-color: #FFA235; */
+                                background-color: #ffc300;
+                                color: black;
+                            }
+                            .low{
+                                background-color: #0ECC5A;
+                            }
+                                
+    
+                            .task-card-status
+                            {
+                                outline: none;
+                                border: none;
+                                color: #cdc3f7;
+                                color: white;
+                                height: 1.688rem;
+                                width: auto;
+                                align-self: flex-start;
+                                font-size: 12px;
+                                font-weight: 500;
+                                border-radius: 25px;
+                                padding: 6px 8px 6px 8px;
+                            }
+                            .to-do
+                            {
+                                background-color: #fca311;
+                                color: black;
+                            }
+                            .in-progress
+                            {
+                                background-color: #3c096c;
+                                color: white;
+                            }
+                            .finished
+                            {
+                                background-color: #1cd760;
+                                color: black;
+                            }
+                            .under-review
+                            {
+                                background-color: #261eb5;
+                                color: white;
+                            }
+                            .overdue
+                            {
+                                /* background-color: #e50815; */
+                                background: linear-gradient(to right, black, #e50815);
+                                color: white;
+                            }
+                            .upcoming
+                            {
+                                background-color: #2036a1;
+                                color: white;
+                            }
+                            .due-today
+                            {
+                                background-color: #ffd500;
+                                color: black;
+                            }
+                            .due-soon
+                            {
+                                background-color: #1b205b;
+                                color: #61e884;
+                            }
+                            .days-left
+                            {
+                                background: linear-gradient(to right, #271906, #c27e07);
+                                color: white;
+                            }
+                            .due-this-week
+                            {
+                                background-color: #511ec7;
+                                color: white;
+                            }
+                            .due-this-month
+                            {
+
+                            }
+                            .updated-recently
+                            {
+                                /* background-color: #14213d; */
+                                background: linear-gradient(to right, #14213d, #390099);
+                                color: white;
+                            }
                         }
                     }
                 }
-            }
-            .task-actions
-            {
-                display: flex;
-                gap: 10px;
-                .update-task
+                .task-actions
                 {
-                    height: 25px;
-                    width: 35px;
-                    border: 1px solid #889396;
-                    border-radius: 8px;
-                    cursor: pointer;
                     display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    img{
-                        height: 15px;
-                        width: 15px;
+                    gap: 10px;
+                    .update-task
+                    {
+                        height: 25px;
+                        width: 35px;
+                        border: 1px solid #889396;
+                        border-radius: 8px;
+                        cursor: pointer;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        img{
+                            height: 15px;
+                            width: 15px;
+                        }
                     }
-                }
-                .delete-task
-                {
-                    height: 25px;
-                    width: 35px;
-                    border: 1px solid #889396;
-                    border-radius: 8px;
-                    cursor: pointer;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    img{
-                        height: 15px;
-                        width: 15px;
+                    .delete-task
+                    {
+                        height: 25px;
+                        width: 35px;
+                        border: 1px solid #889396;
+                        border-radius: 8px;
+                        cursor: pointer;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        img{
+                            height: 15px;
+                            width: 15px;
+                        }
                     }
                 }
             }
         }
-    }
+    }   
 }
