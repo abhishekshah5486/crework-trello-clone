@@ -1,6 +1,6 @@
 import React, {useState, useEffect, useContext} from 'react';
 import dummyProfile from '../../Assets/Images/dummy-profile.png';
-import './TaskListPage.css'
+import './TaskListPage.scss'
 import notificationIcon from '../../Assets/Images/notification-icon.svg';
 import doubleChevronIcon from '../../Assets/Images/double-chevron-icon.svg';
 import lightThemeIcon from '../../Assets/Images/light-theme-icon.svg';
@@ -22,14 +22,10 @@ import UserContext from '../../Context/UserContext';
 import pencilIcon from '../../Assets/Images/pencil.png';
 import deleteIcon from '../../Assets/Images/delete.png';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
-import { retrieveAllTasks } from '../../APICalls/tasks';
+import { retrieveAllTasksByUserId } from '../../APICalls/tasks';
 const HomePage = () => {
     const navigate = useNavigate();
     const {user, setUser} = useContext(UserContext);
-    const [todoTasks, setTodoTasks] = useState([]);
-    const [inProgressTasks, setInProgressTasks] = useState([]);
-    const [underReviewTasks, setUnderReviewTasks] = useState([]);
-    const [finishedTasks, setFinishedTasks] = useState([]);
     const [allTasks, setAllTasks] = useState([]);
     const [typingTimeout, setTypingTimeout] = useState(null);
     const [searchQueryFilter, setSearchQueryFilter] = useState('');
@@ -71,16 +67,8 @@ const HomePage = () => {
     useEffect(() => {
         const fetchTasks = async () => {
         try {
-            const todo = await retrieveTasksByStatus('to-do');
-            const inProgress = await retrieveTasksByStatus('in-progress');
-            const underReview = await retrieveTasksByStatus('under-review');
-            const finished = await retrieveTasksByStatus('finished');
-            const allTasks = await retrieveAllTasks();
-            
-            setTodoTasks(todo.tasks);
-            setInProgressTasks(inProgress.tasks);
-            setUnderReviewTasks(underReview.tasks);
-            setFinishedTasks(finished.tasks);
+            const allTasks = await retrieveAllTasksByUserId(user.userId);
+ 
             setAllTasks(allTasks.tasks);
             setFilteredTasks(allTasks.tasks);
         } catch (err) {

@@ -69,3 +69,14 @@ export const retrieveAllTasks = async () => {
         console.log(err.message);
     }
 }
+
+// Retrieve all tasks by User Id
+export const retrieveAllTasksByUserId = async (userId) => 
+{
+    try {
+        const response = await axiosInstance.get(`/tasks/by-user/${userId}`);
+        return response.data;
+    } catch (err) {
+        console.log(err.message);
+    }
+}
