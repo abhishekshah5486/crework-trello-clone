@@ -314,6 +314,7 @@
                 display: flex;
                 flex-direction: column;
                 gap: 13px;
+                cursor: default;
 
                 .task-card-title{
                     color: #606060;

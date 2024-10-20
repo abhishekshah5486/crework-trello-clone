@@ -11,17 +11,14 @@ import teamsIcon from '../../Assets/Images/teams-icon.svg';
 import analyticsIcon from '../../Assets/Images/analytics-icon.svg';
 import createIcon from '../../Assets/Images/create-icon.svg';
 import downloadIcon from '../../Assets/Images/download-icon.svg';
-import clockIcon from '../../Assets/Images/clock-icon.svg';
 import searchIcon from '../../Assets/Images/search-icon.svg';
 import { useNavigate } from 'react-router-dom';
-import { retrieveTasksByStatus, deleteTaskById, updateTaskStatusById } from '../../APICalls/tasks';
+import { deleteTaskById } from '../../APICalls/tasks';
 import { LogoutUser } from '../../APICalls/users';
-import { formatDistanceToNowStrict } from 'date-fns';
 import { jwtDecode } from 'jwt-decode';
 import UserContext from '../../Context/UserContext';
 import pencilIcon from '../../Assets/Images/pencil.png';
 import deleteIcon from '../../Assets/Images/delete.png';
-import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import { retrieveAllTasksByUserId } from '../../APICalls/tasks';
 const HomePage = () => {
     const navigate = useNavigate();
@@ -30,23 +27,29 @@ const HomePage = () => {
     const [typingTimeout, setTypingTimeout] = useState(null);
     const [searchQueryFilter, setSearchQueryFilter] = useState('');
     const [filteredTasks, setFilteredTasks] = useState([]);
+    const [selectedFilters, setSelectedFilters] = useState({
+        selectedTaskPrioritiesSet: new Set(),
+        selectedTaskStatusesSet: new Set(),
+        selectedTaskDeadlineSet: new Set(),
+        sortingFilter: null,
+    });
 
-    const taskStatus = ['To do', 'Finished', 'Under Review', 'In Progress', ];
-    const statusMapping = {
-        'To do': 'to-do',
-        'Finished': 'finished',
-        'Under Review': 'under-review',
-        'In Progress': 'in-progress',
+    const taskStatus = ['To Do', 'Finished', 'Under Review', 'In Progress', ];
+    const taskStatusMap = {
+        'to-do': 'To Do',
+        'finished': 'Finished',
+        'under-review': 'Under Review',
+        'in-progress': 'In Progress'
     };
     const taskPriorities = [
         'Low',
         'Medium',
         'Urgent'
     ];
-    const priorityMapping = {
-        'Low' : 'low',
-        'Medium' : 'medium',
-        'urgent' : 'urgent'
+    const taskPrioritiesMap = {
+        'low': 'Low',
+        'medium': 'Medium',
+        'urgent': 'Urgent'
     }
     const taskDeadlines = [
         'Overdue',
@@ -57,13 +60,16 @@ const HomePage = () => {
     ]
     const taskSorting = [
         'Last Updated',
+        'Recently Updated',
         'Sort by Title (A-Z)',
         'Sort by Title (Z-A)'
     ]
-    let selectedTaskPrioritiesSet = new Set();
-    let selectedTaskStatusesSet = new Set();
-    let selectedTaskDeadlineSet = new Set();
-    let selectedSortFilterSet = new Set();
+    // Call the apply filter method whenever there's a change in the state of the selectedFilters
+    useEffect(() => 
+    {
+        applyTaskFilter(selectedFilters, searchQueryFilter);
+    }, [selectedFilters, searchQueryFilter])
+
     useEffect(() => {
         const fetchTasks = async () => {
         try {
@@ -76,7 +82,7 @@ const HomePage = () => {
         }
         };
         fetchTasks();
-    }, []);
+    }, [user.userId]);
     const handleUpdateTaskClick = (taskId) => {
         navigate('/home/edit-task', {state: {taskId}});
     }
@@ -95,6 +101,10 @@ const HomePage = () => {
             alert('Something went wrong, please try again later.');
         }
     }
+    function parseDate(dateString) {
+        const [day, month, year] = dateString.split('-').map(Number);
+        return new Date(year, month - 1, day);
+    }
     const renderTaskList = (task, index) => {
         const deadline = parseDate(task.deadline);
         const lastUpdated = new Date(task.updatedAt);
@@ -102,10 +112,6 @@ const HomePage = () => {
         const timeDiff = (deadline - currTime);
 
         const statusIndicators = new Map();
-        function parseDate(dateString) {
-            const [day, month, year] = dateString.split('-').map(Number);
-            return new Date(year, month - 1, day);
-        }
         const generateDeadlineTags = () =>  
         {
             const daysUntilDue = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
@@ -123,7 +129,7 @@ const HomePage = () => {
                 else if (daysUntilDue <= 3)
                 {
                     statusIndicators.set('due-soon', 'Due Soon');
-                    if (daysUntilDue == 1)
+                    if (daysUntilDue === 1)
                     {
                         statusIndicators.set('days-left', `${daysUntilDue} day left`);
                     }
@@ -208,7 +214,45 @@ const HomePage = () => {
         );
     }
 
-    const applyTaskFilter = (searchQueryFilter) => {
+    const handleFilterChange = (e, filterType, value) => 
+    {
+        setSelectedFilters((prevFilters) => {
+            const newFilters = {...prevFilters};
+            if (filterType.trim() === 'sortingFilter')
+            {   
+                if (newFilters.sortingFilter === value)
+                {
+                    newFilters.sortingFilter = null;
+                    e.target.classList.remove('clickedSortFilter');
+                }
+                else 
+                {
+                    document.querySelectorAll('.clickedSortFilter').forEach((el) => {
+                        el.classList.remove('clickedSortFilter');
+                    });
+                    newFilters.sortingFilter = value;
+                    e.target.classList.add('clickedSortFilter');
+                }
+            }
+            else{
+                if (newFilters[filterType].has(value)) {
+                    newFilters[filterType].delete(value);
+                    if (filterType.trim() === 'selectedTaskPrioritiesSet') e.target.classList.remove('clickedPriorityFilter');
+                    else if (filterType.trim() === 'selectedTaskStatusesSet') e.target.classList.remove('clickedStatusFilter');
+                    else if (filterType.trim() === 'selectedTaskDeadlineSet') e.target.classList.remove('clickedDueDateFilter');
+                }
+                else {
+                    newFilters[filterType].add(value);
+                    if (filterType.trim() === 'selectedTaskPrioritiesSet') e.target.classList.add('clickedPriorityFilter');
+                    else if (filterType.trim() === 'selectedTaskStatusesSet') e.target.classList.add('clickedStatusFilter');
+                    else if (filterType.trim() === 'selectedTaskDeadlineSet') e.target.classList.add('clickedDueDateFilter');
+                }
+            }
+            return newFilters;
+        })
+    }
+
+    const applyTaskFilter = (selectedFilters, searchQueryFilter) => {
         let filteredTasks = allTasks;
         // Search filter logic
         if (searchQueryFilter)
@@ -222,12 +266,76 @@ const HomePage = () => {
                     taskDescription.includes(searchQueryFilter.toLowerCase())
                 )
             });
-            setFilteredTasks(filteredTasks);
+        }
+
+        // Filter tasks based on due date tags
+        if (selectedFilters.selectedTaskDeadlineSet?.size > 0)
+        {
+            filteredTasks = filteredTasks.filter((task) => 
+            {
+                const taskDeadline = parseDate(task.deadline);
+                const currentDate = new Date();
+                const daysUntilDue = Math.ceil((taskDeadline - currentDate) / (1000 * 60 * 60 * 24));
+                const isToday = taskDeadline.toDateString() === currentDate.toDateString();
+
+                for (let deadlineFilter of selectedFilters.selectedTaskDeadlineSet)
+                {
+                    if (deadlineFilter === 'Overdue' && daysUntilDue < 0) return true;
+                    else if (deadlineFilter === 'Today' && isToday) return true;
+                    else if (deadlineFilter === 'This Week' && (daysUntilDue <= 7 && daysUntilDue >= 1)) return true;
+                    else if (deadlineFilter === 'This Month' && taskDeadline.getMonth() === currentDate.getMonth()) return true;
+                    else if (deadlineFilter ===  'Upcoming')
+                    {
+                        return true;
+                    }
+                }
+            })
         }
 
         // Filter tasks based on priority
+        if (selectedFilters.selectedTaskPrioritiesSet?.size > 0)
+        {
+            filteredTasks = filteredTasks.filter((task) => 
+            {
+                const taskPriorityEnum = task.priority;
+                const priorityString = taskPrioritiesMap[taskPriorityEnum];
+                return selectedFilters.selectedTaskPrioritiesSet.has(priorityString);
+            })
+        }
 
         // Filter tasks based on status
+        if (selectedFilters.selectedTaskStatusesSet?.size > 0)
+        {
+            filteredTasks = filteredTasks.filter((task) => 
+            {
+                const taskStatusEnum = task.status;
+                const taskStatusString = taskStatusMap[taskStatusEnum];
+                return selectedFilters.selectedTaskStatusesSet.has(taskStatusString);
+            })
+        }
+
+        // Sort tasks based on sorting filters
+        const taskSortingFilter = selectedFilters.sortingFilter;
+        switch(taskSortingFilter)
+        {   
+            case 'Last Updated':
+                filteredTasks = [...filteredTasks].sort((a, b) => 
+                {
+                    return new Date(b.updatedAt) - new Date(a.updatedAt);
+                })
+                break;
+
+            case 'Sort by Title (A-Z)':
+                filteredTasks = [...filteredTasks].sort((a, b) => a.title.localeCompare(b.title));
+                break;
+            
+            case 'Sort by Title (Z-A)':
+                filteredTasks = [...filteredTasks].sort((a, b) => b.title.localeCompare(a.title));
+                break;
+
+            default:
+                break;
+        }
         setFilteredTasks(filteredTasks);
     }
     const handleLogout = async () => {
@@ -254,56 +362,6 @@ const HomePage = () => {
     }
     const handleKanbanViewClick = () => {
         navigate('/home');
-    }
-
-    const handleTaskPriorityFilterTagBtnClick = (e, idx) => {
-        if (!selectedTaskPrioritiesSet.has(idx))
-        {
-            e.target.classList.add('clickedPriorityFilter');
-            selectedTaskPrioritiesSet.add(idx);
-        }
-        else
-        {
-            e.target.classList.remove('clickedPriorityFilter');
-            selectedTaskPrioritiesSet.delete(idx);
-        }
-    }
-
-    const handleTaskStatusFilterTagBtnClick = (e, idx) => {
-        if (!selectedTaskStatusesSet.has(idx))
-        {
-            e.target.classList.add('clickedStatusFilter');
-            selectedTaskStatusesSet.add(idx);
-        }
-        else
-        {
-            e.target.classList.remove('clickedStatusFilter');
-            selectedTaskStatusesSet.delete(idx);
-        }
-    }
-
-    const handleTaskDueDateFilterTagBtnClick = (e, idx) => {
-        if (!selectedTaskDeadlineSet.has(idx))
-        {
-            e.target.classList.add('clickedDueDateFilter');
-            selectedTaskDeadlineSet.add(idx);
-        }
-        else{
-            e.target.classList.remove('clickedDueDateFilter');
-            selectedTaskDeadlineSet.delete(idx);
-        }
-    }
-
-    const handleTaskSortFilterTagBtnClick = (e, idx) => {
-        if (!selectedSortFilterSet.has(idx))
-        {
-            e.target.classList.add('clickedSortFilter');
-            selectedSortFilterSet.add(idx);
-        }
-        else{
-            e.target.classList.remove('clickedSortFilter');
-            selectedSortFilterSet.delete(idx);
-        }
     }
     return (
     <div className='user-home-page'> 
@@ -364,7 +422,7 @@ const HomePage = () => {
                 <img src={searchIcon} alt="" />
                 <input type="text" 
                 placeholder='Search tasks by title or description...' 
-                onChange={(e) => handleSearchChange(e)}
+                onChange={(e) => setSearchQueryFilter(e.target.value)}
                 value={searchQueryFilter}
                 />
                 <button className="create-new-btn" onClick={handleAddNewTaskClick}>Create new <img src={createIcon} alt="" /></button>
@@ -378,7 +436,7 @@ const HomePage = () => {
                             taskPriorities.map((taskPriority, index) => (
                                 <button 
                                 key={index}
-                                onClick={(e) => handleTaskPriorityFilterTagBtnClick(e, index)}
+                                onClick={(e) => handleFilterChange(e, 'selectedTaskPrioritiesSet', taskPriority)}
                                 >{taskPriority}</button>
                             ))
                         }
@@ -391,7 +449,7 @@ const HomePage = () => {
                             taskStatus.map((taskStatus, index) => (
                                 <button 
                                 key={index}
-                                onClick={(e) => handleTaskStatusFilterTagBtnClick(e, index)}
+                                onClick={(e) => handleFilterChange(e, 'selectedTaskStatusesSet', taskStatus)}
                                 >{taskStatus}</button>
                             ))
                         }
@@ -404,7 +462,7 @@ const HomePage = () => {
                             taskDeadlines.map((taskDueDate, index) => (
                                 <button 
                                 key={index}
-                                onClick={(e) => handleTaskDueDateFilterTagBtnClick(e, index)}
+                                onClick={(e) => handleFilterChange(e, 'selectedTaskDeadlineSet', taskDueDate)}
                                 >{taskDueDate}</button>
                             ))
                         }
@@ -417,7 +475,7 @@ const HomePage = () => {
                             taskSorting.map((taskSortFilter, index) => (
                                 <button 
                                 key={index}
-                                onClick={(e) => handleTaskSortFilterTagBtnClick(e, index)}
+                                onClick={(e) => handleFilterChange(e, 'sortingFilter', taskSortFilter)}
                                 >{taskSortFilter}</button>
                             ))
                         }

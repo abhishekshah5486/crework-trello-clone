@@ -27,6 +27,8 @@ import pencilIcon from '../../Assets/Images/pencil.png';
 import deleteIcon from '../../Assets/Images/delete.png';
 import { useNavigate } from 'react-router-dom';
 import { retrieveTasksByStatus, deleteTaskById, updateTaskStatusById } from '../../APICalls/tasks';
+import { getCurrentUser } from '../../APICalls/users';
+import { retrieveAllTasksByUserIdAndStatus } from '../../APICalls/tasks';
 import { LogoutUser } from '../../APICalls/users';
 import { formatDistanceToNowStrict } from 'date-fns';
 import { jwtDecode } from 'jwt-decode';
@@ -35,26 +37,26 @@ import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 
 const HomePage = () => {
     const navigate = useNavigate();
-    const {user, setUser} = useContext(UserContext);
+    const {user, setUser, loading, setLoading} = useContext(UserContext);
 
     const [todoTasks, setTodoTasks] = useState([]);
     const [inProgressTasks, setInProgressTasks] = useState([]);
     const [underReviewTasks, setUnderReviewTasks] = useState([]);
     const [finishedTasks, setFinishedTasks] = useState([]);
-     
+
     useEffect(() => {
-      if (user){
+        if (user){
           return navigate('/home');
-      }
+        }
     }, [user, navigate]);
 
     useEffect(() => {
         const fetchTasks = async () => {
         try {
-            const todo = await retrieveTasksByStatus('to-do');
-            const inProgress = await retrieveTasksByStatus('in-progress');
-            const underReview = await retrieveTasksByStatus('under-review');
-            const finished = await retrieveTasksByStatus('finished');
+            const todo = await retrieveAllTasksByUserIdAndStatus(user.userId, 'to-do');
+            const inProgress = await retrieveAllTasksByUserIdAndStatus(user.userId, 'in-progress');
+            const underReview = await retrieveAllTasksByUserIdAndStatus(user.userId, 'under-review');
+            const finished = await retrieveAllTasksByUserIdAndStatus(user.userId, 'finished');
             
             setTodoTasks(todo.tasks);
             setInProgressTasks(inProgress.tasks);
@@ -259,6 +261,13 @@ const HomePage = () => {
         } catch (err) {
             console.error('Failed to update task status:', err.message);
         }
+    }
+    // Return a loading page if user Id has not been fetched yet
+    if(loading || !user?.userId)
+    {
+        return (
+            <div>Loading...</div>
+        )
     }
     return (
         <div className='user-home-page'> 

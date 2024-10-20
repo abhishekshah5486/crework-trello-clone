@@ -27,7 +27,6 @@ const LoginPage = () => {
         e.preventDefault();
         const formData = new FormData(e.target);
         const userDetails = Object.fromEntries(formData);
-        console.log(userDetails);
 
         try {
             const response = await LoginUser(userDetails);
