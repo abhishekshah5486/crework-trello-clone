@@ -110,11 +110,13 @@ const HomePage = () => {
                     <p className='task-card-timestamp'>
                         {formatDistanceToNowStrict(new Date(task.updatedAt), { addSuffix: true })}
                     </p>
-                    <div className="update-task" onClick={() => handleUpdateTaskClick(task.taskId)}>
-                        <img src={pencilIcon} alt="" />
-                    </div>
-                    <div className="delete-task" onClick={() => handleDeleteTaskClick(task.taskId)}>
-                        <img src={deleteIcon} alt="" />
+                    <div className="task-update-delete">
+                        <div className="update-task" onClick={() => handleUpdateTaskClick(task.taskId)}>
+                            <img src={pencilIcon} alt="" />
+                        </div>
+                        <div className="delete-task" onClick={() => handleDeleteTaskClick(task.taskId)}>
+                            <img src={deleteIcon} alt="" />
+                        </div>
                     </div>
                 </div>
             )}
@@ -371,7 +373,7 @@ const HomePage = () => {
                         </div>
                         <Droppable droppableId='todo-tasks' type='group'>
                             {(provided) => (
-                                <div {...provided.droppableProps} ref={provided.innerRef}>
+                                <div {...provided.droppableProps} ref={provided.innerRef} className='task-status-all-tasks'>
                                 {todoTasks.map((task, index) => renderTaskCard(task, index))}
                                 {provided.placeholder}
                                 </div>
@@ -386,7 +388,7 @@ const HomePage = () => {
                         </div>
                         <Droppable droppableId='in-progress-tasks' type='group'>
                             {(provided) => (
-                                <div {...provided.droppableProps} ref={provided.innerRef}>
+                                <div {...provided.droppableProps} ref={provided.innerRef} className='task-status-all-tasks'>
                                 {inProgressTasks.map((task, index) => renderTaskCard(task, index))}
                                 {provided.placeholder}
                                 </div>
@@ -401,7 +403,7 @@ const HomePage = () => {
                         </div>
                         <Droppable droppableId='under-review-tasks' type='group'>
                             {(provided) => (
-                                <div {...provided.droppableProps} ref={provided.innerRef}>
+                                <div {...provided.droppableProps} ref={provided.innerRef} className='task-status-all-tasks'>
                                 {underReviewTasks.map((task, index) => renderTaskCard(task, index))}
                                 {provided.placeholder}
                                 </div>
@@ -416,7 +418,7 @@ const HomePage = () => {
                         </div>
                         <Droppable droppableId='finished-tasks' type='group'>
                             {(provided) => (
-                                <div {...provided.droppableProps} ref={provided.innerRef}>
+                                <div {...provided.droppableProps} ref={provided.innerRef} className='task-status-all-tasks'>
                                 {finishedTasks.map((task, index) => renderTaskCard(task, index))}
                                 {provided.placeholder}
                                 </div>
