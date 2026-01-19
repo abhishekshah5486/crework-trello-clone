@@ -357,7 +357,7 @@ jobs:
           docker pull ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.DOCKER_IMAGE_BACKEND }}:latest || true
           docker run --rm -d --name test-backend -p 8081:8081 -e MONGODB_URI=mongodb://test:test@test:27017/test -e JWT_SECRET=test ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.DOCKER_IMAGE_BACKEND }}:latest
           sleep 5
-          curl -f http://localhost:8081 || exit 1
+          curl -f http://localhost:8081/health || exit 1
           docker stop test-backend
 
   # Stage 10: Final Status
