@@ -4,11 +4,11 @@ FROM node:18-alpine AS builder
 # Set working directory
 WORKDIR /app
 
-# Copy package files
-COPY package.json package-lock.json ./
+# Copy package.json only
+COPY package.json ./
 
-# Install dependencies (including devDependencies for potential build tools)
-RUN npm ci
+# Install all dependencies (including devDependencies)
+RUN npm install
 
 # Copy source code
 COPY . .
@@ -16,21 +16,20 @@ COPY . .
 # Production stage
 FROM node:18-alpine
 
-# Create app directory
 WORKDIR /app
 
 # Create non-root user
 RUN addgroup -g 1001 -S nodejs && \
     adduser -S nodejs -u 1001
 
-# Copy package files
-COPY package.json package-lock.json ./
+# Copy package.json only
+COPY package.json ./
 
 # Install only production dependencies
-RUN npm ci --only=production && \
+RUN npm install --omit=dev && \
     npm cache clean --force
 
-# Copy application code
+# Copy application code from builder
 COPY --from=builder /app .
 
 # Change ownership to non-root user
