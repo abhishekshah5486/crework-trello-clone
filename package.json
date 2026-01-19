@@ -60,8 +60,7 @@
     ]
   },
   "devDependencies": {
-    "prisma": "^5.17.0",
-    "@babel/plugin-proposal-private-property-in-object": "^7.21.11"
+    "prisma": "^5.17.0"
   },
   "proxy": "http://localhost:8081"
 }
