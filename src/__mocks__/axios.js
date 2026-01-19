@@ -1,7 +1,7 @@
 // Mock axios for Jest tests to handle ES module compatibility
 const mockAxiosInstance = {
-  get: jest.fn(() => Promise.resolve({ data: {} })),
-  post: jest.fn(() => Promise.resolve({ data: {} })),
+  get: jest.fn(() => Promise.resolve({ data: { success: false, user: null } })),
+  post: jest.fn(() => Promise.resolve({ data: { success: false } })),
   put: jest.fn(() => Promise.resolve({ data: {} })),
   delete: jest.fn(() => Promise.resolve({ data: {} })),
   patch: jest.fn(() => Promise.resolve({ data: {} })),
@@ -13,8 +13,8 @@ const mockAxiosInstance = {
 
 const mockAxios = {
   create: jest.fn(() => mockAxiosInstance),
-  get: jest.fn(() => Promise.resolve({ data: {} })),
-  post: jest.fn(() => Promise.resolve({ data: {} })),
+  get: jest.fn(() => Promise.resolve({ data: { success: false, user: null } })),
+  post: jest.fn(() => Promise.resolve({ data: { success: false } })),
   put: jest.fn(() => Promise.resolve({ data: {} })),
   delete: jest.fn(() => Promise.resolve({ data: {} })),
   patch: jest.fn(() => Promise.resolve({ data: {} })),
@@ -24,8 +24,8 @@ const mockAxios = {
   },
   default: {
     create: jest.fn(() => mockAxiosInstance),
-    get: jest.fn(() => Promise.resolve({ data: {} })),
-    post: jest.fn(() => Promise.resolve({ data: {} })),
+    get: jest.fn(() => Promise.resolve({ data: { success: false, user: null } })),
+    post: jest.fn(() => Promise.resolve({ data: { success: false } })),
     put: jest.fn(() => Promise.resolve({ data: {} })),
     delete: jest.fn(() => Promise.resolve({ data: {} })),
     patch: jest.fn(() => Promise.resolve({ data: {} }))
