@@ -3,7 +3,6 @@ const router = express.Router();
 const authMiddleware = require('../middlewares/authMiddleware');
 
 const userControllers = require('../controllers/userController');
-const { ro } = require('date-fns/locale');
 // Define a route for the root URL
 
 // Retrieve user by id
