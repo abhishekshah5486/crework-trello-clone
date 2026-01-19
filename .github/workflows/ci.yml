@@ -169,7 +169,7 @@ jobs:
       - name: Install Backend Dependencies
         run: |
           cd server
-          npm ci
+          npm install
 
       - name: Run Backend Tests
         run: |
@@ -210,7 +210,7 @@ jobs:
       - name: Install Backend Dependencies
         run: |
           cd server
-          npm ci
+          npm install
 
       - name: Verify Backend Build
         run: |

@@ -76,7 +76,7 @@ const LoginPage = () => {
             <button type="submit" className={isFormComplete ? "btn-enabled" : "btn-disabled"}>Login</button>
             <FontAwesomeIcon icon={showPassword ? faEye : faEyeSlash} className="password-icon" onClick={togglePasswordVisibility}/>
             </form>
-            <p>Don't have an account? Create a <Link style={{textDecoration: 'none'}} to="/signup">new account</Link>.</p>
+            <p>Don&apos;t have an account? Create a <Link style={{textDecoration: 'none'}} to="/signup">new account</Link>.</p>
         </div>
         </div>
     )

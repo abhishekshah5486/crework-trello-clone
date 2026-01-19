@@ -348,7 +348,7 @@ const HomePage = () => {
                     <img src={accessAnywhere} alt="" />
                     <div className="info-card-content">
                         <h2>Access Anywhere</h2>
-                        <p>Sync your notes across all devices. Stay productive whether you're on your phone, tablet, or computer.</p>
+                        <p>Sync your notes across all devices. Stay productive whether you&apos;re on your phone, tablet, or computer.</p>
                     </div>
                 </div>
             </div>

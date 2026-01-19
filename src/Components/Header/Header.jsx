@@ -17,12 +17,12 @@ const Header = () => {
     return (
         <>
         <div className="atlassian-ai-learn-more">
-            <p>Accelerate your teams' work with Atlassian Intelligence (AI) features 🤖 now available for all Premium and Enterprise! Learn more.</p>
+            <p>Accelerate your teams&apos; work with Atlassian Intelligence (AI) features 🤖 now available for all Premium and Enterprise! Learn more.</p>
         </div>
         <div className='header-section'>
             <div className="left-header-section">
                 <h1>Workflo brings all your tasks, teammates, and tools together</h1>
-                <p>Keep everything in the same place—even if your team isn't.</p>
+                <p>Keep everything in the same place—even if your team isn&apos;t.</p>
 
                 <div className="sign-up">
                     <input 
@@ -31,7 +31,7 @@ const Header = () => {
                     onChange={(e) => setEmail(e.target.value)}
                     value={email}
                     />
-                    <Link to="/signup" style={{textDecoration: 'none'}}><button type='submit' onClick={handleSubmit}>Sign up - it's free!</button></Link>
+                    <Link to="/signup" style={{textDecoration: 'none'}}><button type='submit' onClick={handleSubmit}>Sign up - it&apos;s free!</button></Link>
                 </div>
             </div>
             <div className="right-header-section">
