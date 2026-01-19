@@ -17,7 +17,7 @@ on:
           - production
 
 env:
-  KUBERNETES_VERSION: '1.28.0'
+  KUBERNETES_VERSION: '1.27.4'
   DOCKER_IMAGE_FRONTEND: crework-trello-clone-frontend
   DOCKER_IMAGE_BACKEND: crework-trello-clone-backend
 
