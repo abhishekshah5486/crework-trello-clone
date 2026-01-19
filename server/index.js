@@ -2,9 +2,9 @@ const express = require('express');
 const dotenv = require('dotenv');
 const cors = require('cors');
 dotenv.config();
-const userRoutes = require('../server/routes/userRoute');
-const taskRoutes = require('../server/routes/taskRoute');
-require('../server/config/dbConfig');
+const userRoutes = require('./routes/userRoute');
+const taskRoutes = require('./routes/taskRoute');
+require('./config/dbConfig');
 
 const app = express();
 app.use(express.json());
@@ -23,7 +23,7 @@ app.get('/health', (req, res) => {
 app.use('/', userRoutes);
 app.use('/', taskRoutes);
 
-const port = process.env.PORT || 8000;
-app.listen(port, '0.0.0.0', () => {
-    console.log(`Server is running on http://0.0.0.0:${port}`);
+const port = process.env.PORT || 8081;
+app.listen(port, () => {
+    console.log(`Server is running on http://localhost:${port}`);
 });
