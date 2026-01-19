@@ -14,11 +14,16 @@ app.use(cors({
 }));
 
 
+// Health check endpoint
+app.get('/health', (req, res) => {
+    res.status(200).json({ status: 'healthy', timestamp: new Date().toISOString() });
+});
+
 // Consume routes
 app.use('/', userRoutes);
 app.use('/', taskRoutes);
 
-const port = process.env.PORT || 8086;
+const port = process.env.PORT || 8081;
 app.listen(port, () => {
     console.log(`Server is running on http://localhost:${port}`);
 })
