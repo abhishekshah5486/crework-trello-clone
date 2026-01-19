@@ -1,7 +1,6 @@
 import { render, waitFor } from '@testing-library/react';
 import App from '../App';
 import UserContextProvider from '../Context/UserContextProvider';
-import { BrowserRouter } from 'react-router-dom';
 
 // Mock axios - Jest will automatically use __mocks__/axios.js
 jest.mock('axios');
@@ -33,11 +32,9 @@ describe('App Component', () => {
 
   test('renders application without crashing', async () => {
     const { container } = render(
-      <BrowserRouter>
         <UserContextProvider>
           <App />
         </UserContextProvider>
-      </BrowserRouter>
     );
     
     // Wait for UserContextProvider to finish loading and context to be available
@@ -48,11 +45,9 @@ describe('App Component', () => {
 
   test('application has basic structure', async () => {
     const { container } = render(
-      <BrowserRouter>
         <UserContextProvider>
           <App />
         </UserContextProvider>
-      </BrowserRouter>
     );
     
     await waitFor(() => {
