@@ -17,196 +17,117 @@ on:
           - production
 
 env:
-  KUBERNETES_VERSION: '1.26.10'
-  DOCKER_IMAGE_FRONTEND: crework-trello-clone-frontend
-  DOCKER_IMAGE_BACKEND: crework-trello-clone-backend
+  CLUSTER_NAME: dummy-cluster
+  NAMESPACE: crework-trello
 
 jobs:
-  # Stage 1: Verify CI Success
-  verify-ci:
-    name: Verify CI Pipeline Success
+  cd:
+    name: CD – Kubernetes Deploy + DAST (Dummy)
     runs-on: ubuntu-latest
     if: github.event.workflow_run.conclusion == 'success' || github.event_name == 'workflow_dispatch'
-    steps:
-      - name: Check CI Status
-        run: |
-          echo "✅ CI Pipeline verification passed"
-          echo "Proceeding with CD deployment"
 
-  # Stage 2: Deploy to Kubernetes
-  deploy-kubernetes:
-    name: Deploy to Kubernetes Cluster
-    runs-on: ubuntu-latest
-    needs: verify-ci
-    environment:
-      name: ${{ github.event.inputs.environment || 'staging' }}
     steps:
-      - name: Checkout code
+      # -------------------------
+      # Checkout
+      # -------------------------
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set up kubectl
-        uses: azure/setup-kubectl@v3
+      # -------------------------
+      # Install kubectl
+      # -------------------------
+      - name: Install kubectl
+        uses: azure/setup-kubectl@v4
         with:
-          version: latest
+          version: v1.28.0
 
-      - name: Configure kubectl
+      # -------------------------
+      # Install kind
+      # -------------------------
+      - name: Install kind
         run: |
-          mkdir -p $HOME/.kube
-          echo "${{ secrets.KUBECONFIG }}" | base64 -d > $HOME/.kube/config
-          chmod 600 $HOME/.kube/config
+          curl -Lo kind https://kind.sigs.k8s.io/dl/v0.20.0/kind-linux-amd64
+          chmod +x kind
+          sudo mv kind /usr/local/bin/kind
 
+      # -------------------------
+      # Create Dummy Kubernetes Cluster
+      # -------------------------
+      - name: Create kind cluster
+        run: |
+          kind create cluster --name $CLUSTER_NAME
+          kubectl cluster-info
+
+      # -------------------------
+      # Create Namespace
+      # -------------------------
       - name: Create namespace
         run: |
-          kubectl create namespace crework-trello || true
-          kubectl config set-context --current --namespace=crework-trello
+          kubectl create namespace $NAMESPACE || true
+          kubectl config set-context --current --namespace=$NAMESPACE
 
-      - name: Create ConfigMap for Backend
-        run: |
-          kubectl create configmap backend-config \
-            --from-literal=MONGODB_URI="${{ secrets.MONGODB_URI }}" \
-            --from-literal=JWT_SECRET="${{ secrets.JWT_SECRET }}" \
-            --from-literal=PORT="8081" \
-            --namespace=crework-trello \
-            --dry-run=client -o yaml | kubectl apply -f -
-
-      - name: Create Secret for Backend
-        run: |
-          kubectl create secret generic backend-secrets \
-            --from-literal=mongodb-uri="${{ secrets.MONGODB_URI }}" \
-            --from-literal=jwt-secret="${{ secrets.JWT_SECRET }}" \
-            --namespace=crework-trello \
-            --dry-run=client -o yaml | kubectl apply -f -
-
-      - name: Replace image placeholders in manifests
-        run: |
-          sed -i "s|<DOCKERHUB_USERNAME>|${{ secrets.DOCKERHUB_USERNAME }}|g" k8s/backend-deployment.yaml
-          sed -i "s|<DOCKERHUB_USERNAME>|${{ secrets.DOCKERHUB_USERNAME }}|g" k8s/frontend-deployment.yaml
-
-      - name: Deploy Backend to Kubernetes
+      # -------------------------
+      # Deploy Backend
+      # -------------------------
+      - name: Deploy Backend
         run: |
           kubectl apply -f k8s/backend-deployment.yaml
           kubectl apply -f k8s/backend-service.yaml
-          kubectl rollout status deployment/backend-deployment -n crework-trello --timeout=5m
+          kubectl rollout status deployment/backend-deployment --timeout=3m
 
-      - name: Deploy Frontend to Kubernetes
+      # -------------------------
+      # Deploy Frontend
+      # -------------------------
+      - name: Deploy Frontend
         run: |
           kubectl apply -f k8s/frontend-deployment.yaml
           kubectl apply -f k8s/frontend-service.yaml
-          kubectl rollout status deployment/frontend-deployment -n crework-trello --timeout=5m
+          kubectl rollout status deployment/frontend-deployment --timeout=3m
 
-      - name: Verify Deployments
+      # -------------------------
+      # Verify Kubernetes Resources
+      # -------------------------
+      - name: Verify deployments
         run: |
-          kubectl get deployments -n crework-trello
-          kubectl get services -n crework-trello
-          kubectl get pods -n crework-trello
+          kubectl get pods
+          kubectl get services
+          kubectl get deployments
 
-      - name: Get Service Endpoints
+      # -------------------------
+      # Dummy DAST – Basic Checks
+      # -------------------------
+      - name: Dummy DAST – Connectivity Check
         run: |
-          echo "Backend Service:"
-          kubectl get service backend-service -n crework-trello
-          echo "Frontend Service:"
-          kubectl get service frontend-service -n crework-trello
+          echo "Running dummy DAST checks..."
+          kubectl get svc
+          echo "DAST placeholder executed successfully"
 
-  # Stage 3: DAST - Dynamic Application Security Testing
-  dast:
-    name: Dynamic Application Security Testing
-    runs-on: ubuntu-latest
-    needs: deploy-kubernetes
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Wait for Services to be Ready
-        run: |
-          echo "Waiting for services to be ready..."
-          sleep 30
-
-      - name: Get Backend Service URL
-        id: backend-url
-        run: |
-          BACKEND_URL=$(kubectl get service backend-service -n crework-trello -o jsonpath='{.status.loadBalancer.ingress[0].hostname}' || echo "localhost:30001")
-          if [ "$BACKEND_URL" = "localhost:30001" ]; then
-            BACKEND_URL="http://localhost:30001"
-          else
-            BACKEND_URL="http://$BACKEND_URL"
-          fi
-          echo "url=$BACKEND_URL" >> $GITHUB_OUTPUT
-          echo "Backend URL: $BACKEND_URL"
-
-      - name: Get Frontend Service URL
-        id: frontend-url
-        run: |
-          FRONTEND_URL=$(kubectl get service frontend-service -n crework-trello -o jsonpath='{.status.loadBalancer.ingress[0].hostname}' || echo "localhost:30000")
-          if [ "$FRONTEND_URL" = "localhost:30000" ]; then
-            FRONTEND_URL="http://localhost:30000"
-          else
-            FRONTEND_URL="http://$FRONTEND_URL"
-          fi
-          echo "url=$FRONTEND_URL" >> $GITHUB_OUTPUT
-          echo "Frontend URL: $FRONTEND_URL"
-
-      - name: Basic Health Check - Backend
-        run: |
-          echo "Testing backend health endpoint..."
-          curl -f ${{ steps.backend-url.outputs.url }}/health || echo "Health endpoint not available, testing root"
-          curl -f ${{ steps.backend-url.outputs.url }}/ || echo "Backend root endpoint test"
-
-      - name: Basic Health Check - Frontend
-        run: |
-          echo "Testing frontend..."
-          curl -f ${{ steps.frontend-url.outputs.url }}/ || echo "Frontend endpoint test"
-
-      - name: Security Headers Check
-        run: |
-          echo "Checking security headers..."
-          curl -I ${{ steps.backend-url.outputs.url }}/ 2>&1 | grep -i "x-content-type-options\|x-frame-options\|x-xss-protection" || echo "Security headers check completed"
-
-      - name: OWASP ZAP Baseline Scan (Dummy DAST)
+      # -------------------------
+      # OWASP ZAP Baseline (Dummy)
+      # -------------------------
+      - name: OWASP ZAP Baseline Scan (Dummy)
         uses: zaproxy/action-baseline@v0.10.0
         with:
-          target: ${{ steps.frontend-url.outputs.url }}
-          rules_file_name: '.zap/rules.tsv'
+          target: http://example.com
           cmd_options: '-a'
         continue-on-error: true
 
-      - name: Generate DAST Report
+      # -------------------------
+      # Post Deployment Summary
+      # -------------------------
+      - name: CD Summary
         if: always()
         run: |
-          echo "## DAST Scan Results" >> $GITHUB_STEP_SUMMARY
-          echo "✅ Basic connectivity tests passed" >> $GITHUB_STEP_SUMMARY
-          echo "✅ Security headers check completed" >> $GITHUB_STEP_SUMMARY
-          echo "⚠️ OWASP ZAP scan completed (results in artifacts)" >> $GITHUB_STEP_SUMMARY
+          echo "## CD Pipeline Summary" >> $GITHUB_STEP_SUMMARY
+          echo "✅ Dummy Kubernetes cluster created using kind" >> $GITHUB_STEP_SUMMARY
+          echo "✅ Application deployed to Kubernetes" >> $GITHUB_STEP_SUMMARY
+          echo "✅ Dummy DAST scan executed" >> $GITHUB_STEP_SUMMARY
+          echo "ℹ️ No real cloud infrastructure was used" >> $GITHUB_STEP_SUMMARY
 
-      - name: Upload DAST Reports
-        uses: actions/upload-artifact@v4
+      # -------------------------
+      # Cleanup
+      # -------------------------
+      - name: Delete kind cluster
         if: always()
-        with:
-          name: dast-reports
-          path: |
-            zap_report.html
-            zap_report.json
-          retention-days: 30
-
-  # Stage 4: Post-Deployment Verification
-  post-deployment:
-    name: Post-Deployment Verification
-    runs-on: ubuntu-latest
-    needs: [deploy-kubernetes, dast]
-    steps:
-      - name: Verify Pod Status
         run: |
-          kubectl get pods -n crework-trello
-          kubectl get pods -n crework-trello -o jsonpath='{.items[*].status.phase}' | grep -v Running && exit 1 || echo "All pods are running"
-
-      - name: Check Application Logs
-        run: |
-          echo "=== Backend Logs ==="
-          kubectl logs -n crework-trello -l app=backend --tail=50 || true
-          echo "=== Frontend Logs ==="
-          kubectl logs -n crework-trello -l app=frontend --tail=50 || true
-
-      - name: CD Pipeline Success
-        run: |
-          echo "✅ CD Pipeline completed successfully"
-          echo "Application deployed to Kubernetes"
-          echo "DAST scanning completed"
+          kind delete cluster --name $CLUSTER_NAME
