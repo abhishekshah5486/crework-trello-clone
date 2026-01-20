@@ -47,7 +47,7 @@ jobs:
       - name: Set up kubectl
         uses: azure/setup-kubectl@v3
         with:
-          version: ${{ env.KUBERNETES_VERSION }}
+          version: latest
 
       - name: Configure kubectl
         run: |
