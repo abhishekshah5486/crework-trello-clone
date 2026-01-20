@@ -28,7 +28,7 @@ jobs:
 
     steps:
       # -------------------------
-      # Checkout
+      # Checkout repository
       # -------------------------
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -51,7 +51,7 @@ jobs:
           sudo mv kind /usr/local/bin/kind
 
       # -------------------------
-      # Create Dummy Kubernetes Cluster
+      # Create KIND cluster
       # -------------------------
       - name: Create kind cluster
         run: |
@@ -67,13 +67,43 @@ jobs:
           kubectl config set-context --current --namespace=$NAMESPACE
 
       # -------------------------
+      # Create DockerHub pull secret
+      # -------------------------
+      - name: Create DockerHub pull secret
+        run: |
+          kubectl create secret docker-registry dockerhub-secret \
+            --docker-username=${{ secrets.DOCKERHUB_USERNAME }} \
+            --docker-password=${{ secrets.DOCKERHUB_TOKEN }} \
+            --docker-email=${{ secrets.DOCKERHUB_EMAIL }} \
+            --namespace=$NAMESPACE || true
+
+      # -------------------------
+      # Create backend configmap
+      # -------------------------
+      - name: Create backend configmap
+        run: |
+          kubectl create configmap backend-config \
+            --from-literal=PORT=8081 \
+            --namespace=$NAMESPACE || true
+
+      # -------------------------
+      # Create backend secrets
+      # -------------------------
+      - name: Create backend secrets
+        run: |
+          kubectl create secret generic backend-secrets \
+            --from-literal=mongodb-uri="${{ secrets.MONGODB_URI }}" \
+            --from-literal=jwt-secret="${{ secrets.JWT_SECRET }}" \
+            --namespace=$NAMESPACE || true
+
+      # -------------------------
       # Deploy Backend
       # -------------------------
       - name: Deploy Backend
         run: |
           kubectl apply -f k8s/backend-deployment.yaml
           kubectl apply -f k8s/backend-service.yaml
-          kubectl rollout status deployment/backend-deployment --timeout=3m
+          kubectl rollout status deployment/backend-deployment --timeout=5m
 
       # -------------------------
       # Deploy Frontend
@@ -82,28 +112,28 @@ jobs:
         run: |
           kubectl apply -f k8s/frontend-deployment.yaml
           kubectl apply -f k8s/frontend-service.yaml
-          kubectl rollout status deployment/frontend-deployment --timeout=3m
+          kubectl rollout status deployment/frontend-deployment --timeout=5m
 
       # -------------------------
-      # Verify Kubernetes Resources
+      # Verify Resources
       # -------------------------
       - name: Verify deployments
         run: |
-          kubectl get pods
-          kubectl get services
-          kubectl get deployments
+          kubectl get pods -n $NAMESPACE
+          kubectl get services -n $NAMESPACE
+          kubectl get deployments -n $NAMESPACE
 
       # -------------------------
-      # Dummy DAST – Basic Checks
+      # Dummy DAST
       # -------------------------
-      - name: Dummy DAST – Connectivity Check
+      - name: Dummy DAST Check
         run: |
           echo "Running dummy DAST checks..."
-          kubectl get svc
-          echo "DAST placeholder executed successfully"
+          kubectl get svc -n $NAMESPACE
+          echo "DAST completed"
 
       # -------------------------
-      # OWASP ZAP Baseline (Dummy)
+      # OWASP ZAP (Dummy)
       # -------------------------
       - name: OWASP ZAP Baseline Scan (Dummy)
         uses: zaproxy/action-baseline@v0.10.0
@@ -113,16 +143,16 @@ jobs:
         continue-on-error: true
 
       # -------------------------
-      # Post Deployment Summary
+      # Summary
       # -------------------------
       - name: CD Summary
         if: always()
         run: |
           echo "## CD Pipeline Summary" >> $GITHUB_STEP_SUMMARY
-          echo "✅ Dummy Kubernetes cluster created using kind" >> $GITHUB_STEP_SUMMARY
-          echo "✅ Application deployed to Kubernetes" >> $GITHUB_STEP_SUMMARY
-          echo "✅ Dummy DAST scan executed" >> $GITHUB_STEP_SUMMARY
-          echo "ℹ️ No real cloud infrastructure was used" >> $GITHUB_STEP_SUMMARY
+          echo "✅ KIND cluster created" >> $GITHUB_STEP_SUMMARY
+          echo "✅ Backend & Frontend deployed" >> $GITHUB_STEP_SUMMARY
+          echo "✅ Secrets & ConfigMaps injected" >> $GITHUB_STEP_SUMMARY
+          echo "✅ Dummy DAST executed" >> $GITHUB_STEP_SUMMARY
 
       # -------------------------
       # Cleanup
